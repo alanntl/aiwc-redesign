@@ -41,6 +41,10 @@ const multiline = (document, node, value) => {
 /* Mirror of layout-model.js (the runtime's MarviLayout) — the maths the CMS
  * layout controls are defined by. Kept in sync by hand; it is 12 lines. */
 const clamp = (value, min, max, fallback) => {
+  // An empty field is "not set", not zero. The CMS stores a cleared number
+  // as null, and Number(null) is 0 — which clamped a cleared zoom to its 50%
+  // floor and drew twelve researchers' portraits at half size.
+  if (value == null || value === '') return fallback;
   const n = Number(value);
   return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
 };
