@@ -201,9 +201,9 @@ collections:
                 default: "blue"
                 required: false
                 options:
-                  - { label: "Teal", value: "blue" }
-                  - { label: "Copper", value: "copper" }
-                hint: "The site uses two accent colours. Green was a third that rendered the same as teal, so it has been folded into it."
+                  - { label: "Warm sand", value: "blue" }
+                  - { label: "Deep blue", value: "copper" }
+                hint: "Warm sand suits a closing invitation; deep blue is for a callout that should stand apart. (The stored values are kept from the earlier design so existing pages keep their choice.)"
           - label: "Button link"
             name: "button"
             widget: "object"
@@ -302,6 +302,13 @@ collections:
               - { label: "Tab label", name: "tabLabel", widget: "string", required: false, hint: "Short name shown when the page uses tabs or jump links. Falls back to the acronym in the heading, then the heading itself." }
               - { label: "Text", name: "lede", widget: "text", required: false }
               - { label: "Label colour", name: "accent", widget: "string", required: false, hint: "Optional CSS colour, e.g. #88b3b8" }
+              - label: "Background"
+                name: "tone"
+                widget: "select"
+                required: false
+                default: ""
+                options: [{ label: "White", value: "" }, { label: "Pale blue", value: "sky" }, { label: "Deep blue", value: "deep" }]
+                hint: "Colours this heading and everything below it, up to the next heading. Consecutive headings with the same background share one band. Use deep blue once per page at most."
               - { label: "i18n", name: "i18n", widget: "hidden", required: false }
           - label: "Statement with numbers"
             name: "statement"

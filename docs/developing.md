@@ -65,11 +65,19 @@ same list.
 
 ## Design rules
 
-- **One brand colour.** `--azure` (#2690FA) is the logo's blue and is only
-  ever decoration — it is 3.3:1 on white. Text and buttons use `--azure-ink`.
+- **Two waters and one shore.** Deep-water navy (`--deep`) carries weight:
+  headings, buttons, one feature band, the footer. Sandstone gold (`--gold`)
+  is the warm accent, for details only — rules, timeline dots and years,
+  list markers, the current menu item. River mist (`--sky`) and sand
+  (`--sand`) are the two tints; sand appears once, on the closing callout.
+- **The logo's azure is decoration only** (`--azure`, 3.3:1 on white): the
+  logo and the river. Inline links use `--azure-ink`.
 - **No motion on load.** Nothing fades, slides or counts up as you scroll.
   Movement only answers an action: a menu opening, a group expanding.
-- **One dark band per page** — the closing callout — plus the footer.
+- **Background bands.** A section heading's "Background" (White, Pale blue,
+  Deep blue) colours it and everything up to the next heading; consecutive
+  headings with the same background share one band. Deep blue at most once
+  per page — on the home page it holds "Who we are" and the timeline.
 - **Long pages are read top to bottom.** A page set to "tabs" in the CMS now
   renders an "On this page" list of jump links; nothing is hidden.
 - **Preview builds** set `"noindex": true` in `content/site.json`, which adds

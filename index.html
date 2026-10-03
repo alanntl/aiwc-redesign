@@ -18,25 +18,37 @@
      * (the edge of the home page photograph). Everything else is white
      * space, one typeface and a single top navigation.
      *
-     * Colour roles
-     *   --azure      the logo's own blue. Decoration only: it is 3.3:1 on
-     *                white, so it never carries text.
-     *   --azure-ink  the same hue, darkened to 6:1 — links and buttons.
-     *   --deep       deep water. Headings, the closing band, the footer.
-     *   --sky        the river's palest tint, for the one alternate band.
+     * Colour roles — two waters and one shore
+     *   --deep       deep water navy. Headings, buttons, the one feature
+     *                band a page may carry, the footer.
+     *   --gold       sandstone gold, the warm accent: Australian earth and
+     *                Indian turmeric in one hue. Details only — rules,
+     *                dots, years, markers — never a fill larger than a dot.
+     *   --gold-ink   gold darkened to 5.4:1 for small text on light ground.
+     *   --azure      the logo's own blue. Decoration only (the river): it
+     *                is 3.3:1 on white, so it never carries text.
+     *   --azure-ink  the same hue at 6:1 — inline links.
+     *   --sky        river mist, the cool tint (hero, page heads, a band).
+     *   --sand       the warm tint, used once: the closing invitation.
      */
     :root {
       --white: #FFFFFF;
-      --sky: #EEF6FD;
-      --sky-line: #D6E7F7;
+      --sky: #EEF5FB;
+      --sky-line: #D5E4F1;
+      --sand: #F5EFE4;
+      --sand-line: #E6D9C3;
+      --gold: #C9A063;
+      --gold-ink: #8A6326;
       --azure: #2690FA;
       --azure-ink: #1463C2;
       --azure-press: #0F4E9C;
       --river-top: #97DBF9;
       --river-mid: #54C1F3;
       --river-low: #0F9FE7;
-      --deep: #0C2741;
-      --deep-2: #12324F;
+      --deep: #0B2A45;
+      --deep-2: #14395C;
+      --on-deep: #C9D6E3;
+      --on-deep-muted: #93A8BD;
       --ink: #1B2430;
       --muted: #56606B;
       --line: #DCE4EC;
@@ -133,7 +145,7 @@
       border-radius: var(--radius);
     }
     .nav-link:hover { color: var(--azure-ink); }
-    .nav-item.is-current > .nav-link { color: var(--azure-ink); box-shadow: inset 0 -2px 0 var(--azure); border-radius: 0; }
+    .nav-item.is-current > .nav-link { color: var(--deep); box-shadow: inset 0 -2px 0 var(--gold); border-radius: 0; }
     .nav-more {
       display: grid; place-items: center;
       width: 24px; height: 32px; margin-left: -6px;
@@ -176,11 +188,11 @@
     .nav-cta {
       display: inline-flex; align-items: center;
       margin-left: 12px; padding: 10px 20px;
-      background: var(--azure-ink); color: var(--white);
+      background: var(--deep); color: var(--white);
       font-weight: 600; text-decoration: none; white-space: nowrap;
       border-radius: 999px;
     }
-    .nav-cta:hover, .nav-cta[aria-current="page"] { background: var(--azure-press); color: var(--white); }
+    .nav-cta:hover, .nav-cta[aria-current="page"] { background: var(--deep-2); color: var(--white); }
 
     .menu-toggle {
       display: none;
@@ -248,7 +260,7 @@
 
     .eyebrow {
       margin-bottom: 12px;
-      color: var(--azure-ink);
+      color: var(--gold-ink);
       font-size: var(--t-small);
       font-weight: 600;
       letter-spacing: 0.01em;
@@ -259,17 +271,17 @@
     .button {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 12px 22px;
-      border: 1.5px solid var(--azure-ink);
+      border: 1.5px solid var(--deep);
       border-radius: 999px;
-      color: var(--azure-ink);
+      color: var(--deep);
       font-weight: 600;
       line-height: 1.2;
       text-decoration: none;
-      background: var(--white);
+      background: transparent;
     }
-    .button:hover { background: var(--sky); color: var(--azure-press); border-color: var(--azure-press); }
-    .button.primary { background: var(--azure-ink); color: var(--white); }
-    .button.primary:hover { background: var(--azure-press); border-color: var(--azure-press); color: var(--white); }
+    .button:hover { background: var(--deep); color: var(--white); }
+    .button.primary { background: var(--deep); color: var(--white); }
+    .button.primary:hover { background: var(--deep-2); border-color: var(--deep-2); color: var(--white); }
     .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 
     /* External links say so once, quietly, instead of an arrow in the text. */
@@ -292,6 +304,9 @@
       min-height: min(640px, calc(100vh - var(--header-h)));
       max-width: 1600px;
       margin: 0 auto;
+      background: var(--sky);
+      box-shadow: 0 0 0 100vmax var(--sky);
+      clip-path: inset(0 -100vmax);
     }
     .hero-copy {
       display: flex;
@@ -401,11 +416,11 @@
     .prose-list { margin: 0; padding-left: 1.1em; }
     .prose-list li { padding-left: 0.3em; }
     .prose-list li + li { margin-top: 0.4em; }
-    .prose-list li::marker { color: var(--azure); }
+    .prose-list li::marker { color: var(--gold); }
     .prose .app-logo { width: 72px; height: 72px; margin-bottom: 16px; border-radius: 12px; }
     .feature-list { display: grid; gap: 14px; margin-top: 24px; }
     .feature-item { display: grid; grid-template-columns: 2.25rem 1fr; gap: 12px; }
-    .feature-item > span { color: var(--azure-ink); font-weight: 600; }
+    .feature-item > span { color: var(--gold-ink); font-weight: 600; }
     .feature-item strong { display: block; color: var(--deep); }
     .feature-item small { display: block; color: var(--muted); font-size: var(--t-small); }
 
@@ -432,7 +447,7 @@
 
     .home-statement { margin: 0 0 56px; }
     .statement-grid { display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: 24px; align-items: baseline; }
-    .statement-grid .meta { color: var(--azure-ink); font-weight: 600; }
+    .statement-grid .meta { color: var(--gold-ink); font-weight: 600; }
     .home-statement blockquote {
       margin: 0; color: var(--deep);
       font-size: var(--t-h2); font-weight: 600; font-variation-settings: "wdth" 88; line-height: 1.15;
@@ -476,14 +491,14 @@
       border-radius: var(--radius); background: var(--sky);
     }
     .story-copy { display: block; padding-top: 16px; }
-    .story-copy .meta { display: block; margin-bottom: 4px; color: var(--azure-ink); font-weight: 600; }
+    .story-copy .meta { display: block; margin-bottom: 4px; color: var(--gold-ink); font-weight: 600; }
     .story-copy .meta:empty { display: none; }
     .story-copy strong {
       display: block; color: var(--deep);
       font-size: var(--t-h3); font-weight: 600; font-variation-settings: "wdth" 88; line-height: 1.2;
     }
     .story-copy .story-text { display: block; margin-top: 8px; color: var(--muted); font-size: 1rem; line-height: 1.5; }
-    .story-card:hover strong { color: var(--azure-ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+    .story-card:hover strong { text-decoration: underline; text-decoration-color: var(--gold); text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
 
     /* ── steps: a dated sequence reads as a timeline ────────────────── */
 
@@ -498,14 +513,49 @@
     .process-step::before {
       content: ""; position: absolute; top: -7px; left: 0;
       width: 12px; height: 12px; border-radius: 50%;
-      background: var(--white); border: 2px solid var(--azure);
+      background: var(--white); border: 2px solid var(--gold);
     }
     .process-step .step-when {
       display: block; margin-bottom: 6px;
-      color: var(--azure-ink); font-size: 1.625rem; font-weight: 600; font-variation-settings: "wdth" 82; line-height: 1;
+      color: var(--gold-ink); font-size: 1.625rem; font-weight: 600; font-variation-settings: "wdth" 82; line-height: 1;
     }
     .process-step h3 { font-size: 1.0625rem; line-height: 1.3; }
     .process-step p { margin-top: 8px; color: var(--muted); font-size: 0.9375rem; line-height: 1.5; }
+
+    /* ── background bands (a banner's "Background") ─────────────────── */
+
+    .tone-band {
+      margin: 88px 0;
+      padding: 80px 0;
+      background: var(--band);
+      box-shadow: 0 0 0 100vmax var(--band);
+      clip-path: inset(0 -100vmax);
+    }
+    .tone-band[data-tone="sky"] { --band: var(--sky); }
+    .tone-band[data-tone="deep"] { --band: var(--deep); color: var(--on-deep); }
+    .tone-band > :first-child { margin-top: 0; }
+    .tone-band > :last-child { margin-bottom: 0; }
+    .tone-band + .tone-band { margin-top: -88px; }
+
+    .tone-band[data-tone="deep"] h2,
+    .tone-band[data-tone="deep"] h3,
+    .tone-band[data-tone="deep"] .prose p.large { color: var(--white); }
+    .tone-band[data-tone="deep"] .lede,
+    .tone-band[data-tone="deep"] .prose,
+    .tone-band[data-tone="deep"] .meta { color: var(--on-deep); }
+    .tone-band[data-tone="deep"] .eyebrow { color: var(--gold); }
+    .tone-band[data-tone="deep"] a:not(.button) { color: var(--white); }
+    .tone-band[data-tone="deep"] .button { border-color: var(--white); color: var(--white); }
+    .tone-band[data-tone="deep"] .button:hover { background: var(--white); color: var(--deep); }
+    .tone-band[data-tone="deep"] .button.primary { background: var(--white); color: var(--deep); }
+    .tone-band[data-tone="deep"] .button.primary:hover { background: var(--gold); border-color: var(--gold); }
+    .tone-band[data-tone="deep"] .split + .split { border-top-color: rgba(255, 255, 255, 0.14); }
+    .tone-band[data-tone="deep"] .app-shot { background: var(--deep-2); }
+    .tone-band[data-tone="deep"] .process-step { border-top-color: rgba(255, 255, 255, 0.18); }
+    .tone-band[data-tone="deep"] .process-step::before { background: var(--deep); }
+    .tone-band[data-tone="deep"] .process-step .step-when { color: var(--gold); }
+    .tone-band[data-tone="deep"] .process-step p { color: var(--on-deep-muted); }
+    .tone-band[data-tone="deep"] :focus-visible { outline-color: var(--gold); }
 
     /* ── cards (generic) ────────────────────────────────────────────── */
 
@@ -638,10 +688,10 @@
     .partner-showcase { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 40px 56px; margin-bottom: 24px; }
     .partner-country h3 {
       display: flex; align-items: baseline; gap: 10px;
-      margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--sky-line);
+      margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--gold);
       font-size: 1.125rem;
     }
-    .partner-country h3 span { color: var(--muted); font-size: var(--t-small); font-weight: 500; }
+    .partner-country h3 span { color: var(--gold-ink); font-size: var(--t-small); font-weight: 600; }
     .partner-country ul { margin: 0; padding: 0; list-style: none; columns: 1; column-gap: 40px; }
     .partner-country--wide ul { columns: 2; }
     .partner-country li { break-inside: avoid; padding: 6px 0; line-height: 1.35; }
@@ -718,18 +768,24 @@
     div.cms-block-gallery img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 4px; }
     @media (max-width: 760px) { .cms-block-imageText { grid-template-columns: 1fr; } }
 
-    /* The closing call to action: the one dark band on a page. */
+    /* The closing call to action: a warm sand panel, the one warm surface
+       on the page, so the invitation reads as an invitation rather than
+       another dark slab. "copper" (labelled Deep blue in the CMS) inverts. */
     .cms-block-callout {
       position: relative;
       padding: 56px clamp(24px, 5vw, 64px);
-      background: var(--deep); color: var(--white);
+      background: var(--sand);
       border-radius: var(--radius);
     }
-    .cms-block-callout h2 { max-width: 40rem; color: var(--white); font-size: var(--t-h2); }
-    .cms-block-callout p { max-width: 60ch; margin-top: 16px; color: #C9D6E3; font-size: 1.125rem; }
-    .cms-block-callout .button { margin-top: 28px; background: var(--white); border-color: var(--white); color: var(--deep); }
-    .cms-block-callout .button:hover { background: var(--sky); border-color: var(--sky); }
-    .cms-block-callout[data-tone="copper"] { background: var(--deep-2); }
+    .cms-block-callout h2 { max-width: 40rem; font-size: var(--t-h2); }
+    .cms-block-callout p { max-width: 60ch; margin-top: 16px; color: var(--ink); font-size: 1.125rem; }
+    .cms-block-callout .button { margin-top: 28px; background: var(--deep); border-color: var(--deep); color: var(--white); }
+    .cms-block-callout .button:hover { background: var(--deep-2); border-color: var(--deep-2); }
+    .cms-block-callout[data-tone="copper"] { background: var(--deep); }
+    .cms-block-callout[data-tone="copper"] h2 { color: var(--white); }
+    .cms-block-callout[data-tone="copper"] p { color: var(--on-deep); }
+    .cms-block-callout[data-tone="copper"] .button { background: var(--white); border-color: var(--white); color: var(--deep); }
+    .cms-block-callout[data-tone="copper"] .button:hover { background: var(--gold); border-color: var(--gold); }
     .cms-block-button { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
     .cms-block-button h2 { margin: 0; font-size: var(--t-h3); }
 
@@ -767,7 +823,7 @@
 
     /* ── footer ─────────────────────────────────────────────────────── */
 
-    .site-footer { background: var(--deep); color: #C9D6E3; font-size: 0.9375rem; }
+    .site-footer { background: var(--deep); color: var(--on-deep); font-size: 0.9375rem; }
     .footer-inner {
       max-width: calc(var(--wrap) + 2 * var(--gutter));
       margin: 0 auto;
@@ -778,7 +834,7 @@
     }
     .footer-logo { height: 56px; width: auto; }
     .footer-brand p { margin-top: 18px; max-width: 26rem; }
-    .site-footer h2 { margin-bottom: 14px; color: var(--white); font-size: 1rem; font-variation-settings: "wdth" 100; }
+    .site-footer h2 { margin-bottom: 14px; color: var(--gold); font-size: 1rem; font-variation-settings: "wdth" 100; }
     .site-footer ul { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 32px; }
     .site-footer li { padding: 4px 0; break-inside: avoid; }
     .site-footer a { color: var(--white); text-decoration: none; }

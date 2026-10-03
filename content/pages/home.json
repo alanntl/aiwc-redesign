@@ -161,7 +161,8 @@
     {
       "type": "banner",
       "title": "Who we are",
-      "lede": ""
+      "lede": "",
+      "tone": "deep"
     },
     {
       "type": "split",
@@ -195,7 +196,8 @@
     {
       "type": "banner",
       "title": "Five years, and the next five.",
-      "lede": ""
+      "lede": "",
+      "tone": "deep"
     },
     {
       "type": "steps",

@@ -329,7 +329,9 @@ function setupSectionNav() {
   // no such wrapper — its blocks are direct children of the panel — so the
   // panel itself is the container there.
   const body = panel.querySelector('.section-body') || panel;
-  const banners = [...body.querySelectorAll(':scope > [data-section-anchor]')];
+  // Headings sit directly in the body, or one level down inside a coloured
+  // background band (see toneBands in templates.mjs).
+  const banners = [...body.querySelectorAll(':scope > [data-section-anchor], :scope > .tone-band > [data-section-anchor]')];
   if (banners.length < 2) return;
   // "tabs" hid every section but one behind a sticky bar, which is most of
   // what made long pages feel crowded. It now renders as jump links: the

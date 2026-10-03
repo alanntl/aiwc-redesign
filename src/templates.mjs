@@ -1300,6 +1300,35 @@ const homeHero = (document, page, ctx) => {
 };
 
 /**
+ * Background bands. A section heading (banner) can carry a tone — "sky" or
+ * "deep" — which colours that heading and every block after it, up to the
+ * next heading. Consecutive headings with the same tone share one band, so
+ * "Who we are" and the timeline below it read as a single deep-blue stretch.
+ *
+ * Bands are plain wrappers; untoned blocks stay direct children of the
+ * section body exactly as before.
+ */
+const BAND_TONES = new Set(['sky', 'deep']);
+const toneBands = (document, items) => {
+  const out = [];
+  let band = null;
+  items.forEach(({ node, block }) => {
+    if (block.type === 'banner') {
+      const tone = BAND_TONES.has(block.tone) ? block.tone : '';
+      if (!tone) band = null;
+      else if (!band || band.getAttribute('data-tone') !== tone) {
+        band = el(document, 'div', { class: 'tone-band' });
+        band.setAttribute('data-tone', tone);
+        out.push(band);
+      }
+    }
+    if (band) band.appendChild(node);
+    else out.push(node);
+  });
+  return out;
+};
+
+/**
  * Render one page into a <section class="panel"> element.
  * ctx: { index, total, urlFor(pageId) }
  */
@@ -1340,9 +1369,11 @@ export function renderPage(document, page, ctx) {
         return;
       }
     }
-    (FLEX_TYPES.has(block.type) ? flex : core).push(node);
+    if (FLEX_TYPES.has(block.type)) flex.push(node);
+    else core.push({ node, block });
     previous = { type: block.type, node };
   });
+  const body = toneBands(document, core);
 
   // The page's in-page navigation mode ("jump" | "tabs" | "collapse"), chosen
   // in the CMS. Set before the home branch returns, or the home template can
@@ -1361,9 +1392,9 @@ export function renderPage(document, page, ctx) {
   if (page.template === 'home') {
     section.appendChild(homeHero(document, page, ctx));
     const homeBody = el(document, 'div', { class: 'home-body' });
-    const body = el(document, 'div', { class: 'section-body' });
-    core.forEach((n) => body.appendChild(n));
-    homeBody.appendChild(body);
+    const holder = el(document, 'div', { class: 'section-body' });
+    body.forEach((n) => holder.appendChild(n));
+    homeBody.appendChild(holder);
     if (flex.length) homeBody.appendChild(flexWrap(document, flex));
     section.appendChild(homeBody);
     return section;
@@ -1371,9 +1402,9 @@ export function renderPage(document, page, ctx) {
 
   const wrap = el(document, 'div', { class: 'content-wrap' });
   wrap.appendChild(standardHead(document, page, ctx));
-  const body = el(document, 'div', { class: 'section-body' });
-  core.forEach((n) => body.appendChild(n));
-  wrap.appendChild(body);
+  const holder = el(document, 'div', { class: 'section-body' });
+  body.forEach((n) => holder.appendChild(n));
+  wrap.appendChild(holder);
   if (flex.length) wrap.appendChild(flexWrap(document, flex));
   section.appendChild(wrap);
   return section;
