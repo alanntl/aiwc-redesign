@@ -160,10 +160,18 @@
     }
     .nav-menu a:hover { background: var(--sky); color: var(--azure-ink); }
     .nav-menu a[aria-current="page"] { color: var(--azure-ink); font-weight: 600; }
-    @media (hover: hover) and (min-width: 1000px) {
+    @media (hover: hover) and (min-width: 1080px) {
       .has-menu:hover > .nav-menu { display: block; }
     }
     .has-menu.is-open > .nav-menu { display: block; }
+    /* Between the menu-button breakpoint and a roomy desktop the six entries
+       and the button only just fit, so the spacing tightens rather than the
+       Contact button falling off the edge. */
+    @media (min-width: 1080px) and (max-width: 1239px) {
+      .header-inner { gap: 20px; }
+      .nav-link { padding-inline: 7px; }
+      .nav-cta { margin-left: 6px; padding-inline: 16px; }
+    }
 
     .nav-cta {
       display: inline-flex; align-items: center;
@@ -196,7 +204,7 @@
       padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white);
     }
 
-    @media (max-width: 999px) {
+    @media (max-width: 1079px) {
       :root { --header-h: 68px; }
       .brand-mark img { height: 44px; }
       .menu-toggle { display: inline-flex; }
