@@ -65,13 +65,15 @@ same list.
 
 ## Design rules
 
-- **Two waters and one shore.** Deep-water navy (`--deep`) carries weight:
-  headings, buttons, one feature band, the footer. Sandstone gold (`--gold`)
-  is the warm accent, for details only — rules, timeline dots and years,
-  list markers, the current menu item. River mist (`--sky`) and sand
-  (`--sand`) are the two tints; sand appears once, on the closing callout.
-- **The logo's azure is decoration only** (`--azure`, 3.3:1 on white): the
-  logo and the river. Inline links use `--azure-ink`.
+- **Navy, one orange, pale blue.** Deep navy (`--deep`) is the navigation
+  bar, the hero veil, page heads, deep bands and the footer. Orange
+  (`--orange`, 4.7:1 with white) is reserved for the one action — Collaborate
+  with us and the hero button. `--accent` (sunrise orange) marks details only:
+  the current menu item, rules, timeline years and dots, figures on navy;
+  `--accent-ink` is its 5.4:1 text form on white. Pale blue (`--sky`) is the
+  light band; warm sand (`--sand`) is the closing callout.
+- **The logo's azure is never text** (`--azure`, 3.3:1 on white). Inline
+  links use `--azure-ink`.
 - **No motion on load.** Nothing fades, slides or counts up as you scroll.
   Movement only answers an action: a menu opening, a group expanding.
 - **Background bands.** A section heading's "Background" (White, Pale blue,

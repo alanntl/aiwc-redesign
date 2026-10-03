@@ -23,10 +23,10 @@ institutions, built as static HTML and published to GitHub Pages.
 
 Content from [aiwc.org.au](https://aiwc.org.au), built on the MARVI site's
 structure: the same block types, the same per-block layout controls and the
-same CMS. The design is AIWC's own: a white page, one top navigation, the
-Anek Latin typeface, and the azure of the AIWC logo as the only brand colour.
-The logo's river is the one decorative gesture — it forms the edge of the
-home page photograph.
+same CMS. The design ("Field") follows the AIWC navigation guide: a white
+brand row with the logo, a deep navy navigation bar with seven tabs, one
+orange action (Collaborate with us), a full-width field photograph under a
+navy veil, and the Anek Latin typeface throughout.
 
 Two things exist here that the MARVI site has no equivalent for, because AIWC
 has content MARVI does not: the searchable **researcher directory** and the

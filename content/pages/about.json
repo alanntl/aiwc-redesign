@@ -22,7 +22,8 @@
       "type": "banner",
       "eyebrow": "Who we are",
       "title": "Two countries. One water problem.",
-      "lede": ""
+      "lede": "",
+      "tabLabel": "Who we are"
     },
     {
       "type": "split",
@@ -178,7 +179,8 @@
       "type": "banner",
       "eyebrow": "Our journey",
       "title": "Five years, and the next five.",
-      "lede": ""
+      "lede": "",
+      "tabLabel": "Our journey"
     },
     {
       "type": "steps",

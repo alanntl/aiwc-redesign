@@ -1298,22 +1298,6 @@ const crumbs = (document, ctx, trail) => {
   return nav;
 };
 
-/*
- * The meander from the AIWC logo, drawn along the photo's left edge (and its
- * top edge on narrow screens, where the photo sits under the text). The same
- * curve is the photo's CSS mask, so the river runs exactly along the bank.
- * Stretched with the frame; the stroke keeps its width regardless.
- */
-const heroRiverSvg = () =>
-  '<svg class="hero-river" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
-  '<defs>' +
-  '<linearGradient id="river-v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#97DBF9"/><stop offset=".5" stop-color="#54C1F3"/><stop offset="1" stop-color="#0F9FE7"/></linearGradient>' +
-  '<linearGradient id="river-h" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#97DBF9"/><stop offset=".5" stop-color="#54C1F3"/><stop offset="1" stop-color="#0F9FE7"/></linearGradient>' +
-  '</defs>' +
-  '<path class="river-v" d="M15 0C2 14 25 27 14 44C3 61 26 72 13 88C9 93 8 97 9 100" stroke="url(#river-v)" stroke-width="14"/>' +
-  '<path class="river-h" d="M0 12C14 2 27 22 44 12C61 3 72 21 88 11C93 8 97 8 100 9" stroke="url(#river-h)" stroke-width="10"/>' +
-  '</svg>';
-
 const homeHero = (document, page, ctx) => {
   const hero = page.hero || {};
   const intro = page.intro || {};
@@ -1344,7 +1328,6 @@ const homeHero = (document, page, ctx) => {
   }
   const stage = el(document, 'div', { class: 'hero-image-stage' });
   stage.appendChild(photo(document, page.heroImage, { alt: hero.imageAlt || page.heroImage.alt || '', lazy: false, className: 'hero-image-main' }));
-  stage.insertAdjacentHTML('beforeend', heroRiverSvg());
   if (hero.caption) {
     stage.appendChild(multiline(document, el(document, 'div', { class: 'hero-image-caption', key: t('caption') }), hero.caption));
   }
