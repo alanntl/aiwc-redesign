@@ -12,5 +12,45 @@
     "repo": "AIWC2020/aiwc_website",
     "branch": "main",
     "authUrl": null
-  }
+  },
+  "nav": [
+    {
+      "page": "about",
+      "children": [
+        "aiwc5"
+      ]
+    },
+    {
+      "page": "work",
+      "children": [
+        "research",
+        "education",
+        "training",
+        "outreach"
+      ]
+    },
+    {
+      "page": "people"
+    },
+    {
+      "page": "partners"
+    },
+    {
+      "page": "publications",
+      "children": [
+        "resources"
+      ]
+    },
+    {
+      "page": "news",
+      "children": [
+        "12",
+        "waterwise"
+      ]
+    },
+    {
+      "page": "contact",
+      "button": true
+    }
+  ]
 }

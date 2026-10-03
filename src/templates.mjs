@@ -148,9 +148,8 @@ const pageLink = (document, ctx, { label, page, primary, key }) => {
   const a = el(document, 'a', { class: 'button' + (primary ? ' primary' : '') });
   a.setAttribute('data-open', page);           // i18n slot + old-link compatibility
   a.setAttribute('href', ctx.urlFor(page));
-  a.textContent = (label || '') + ' ';
+  a.textContent = label || '';
   if (key) a.setAttribute('data-i18n', key);
-  a.appendChild(el(document, 'span', { text: '↗' }));
   return a;
 };
 
@@ -311,7 +310,7 @@ const BLOCKS = {
       if (block.tabLabel) wrap.setAttribute('data-tab-label', block.tabLabel);
     }
     if (block.eyebrow) {
-      const eyebrow = el(document, 'p', { class: 'eyebrow', text: block.eyebrow, key: ctx.t('eyebrow') });
+      const eyebrow = el(document, 'p', { class: 'eyebrow', text: unnumbered(block.eyebrow), key: ctx.t('eyebrow') });
       if (block.accent) eyebrow.style.color = block.accent;
       wrap.appendChild(eyebrow);
     }
@@ -347,6 +346,7 @@ const BLOCKS = {
 
   storyCards(document, block, ctx) {
     const section = el(document, 'section', { class: 'home-explore' });
+    if (block.tone === 'sky') section.setAttribute('data-tone', 'sky');
     // The id is derived from the block's own title. It used to be the constant
     // 'explore-title', and the home page renders two of these blocks — so the
     // document carried a duplicate id and both sections' aria-labelledby
@@ -364,7 +364,7 @@ const BLOCKS = {
     }
     const head = el(document, 'header', { class: 'explore-head' });
     const headText = el(document, 'div');
-    headText.appendChild(el(document, 'p', { class: 'eyebrow', text: block.eyebrow, key: ctx.t('eyebrow') }));
+    if (block.eyebrow) headText.appendChild(el(document, 'p', { class: 'eyebrow', text: unnumbered(block.eyebrow), key: ctx.t('eyebrow') }));
     const h2 = el(document, 'h2', { text: block.title, key: ctx.t('title') });
     h2.id = headingId;
     headText.appendChild(h2);
@@ -378,11 +378,13 @@ const BLOCKS = {
       card.setAttribute('href', ctx.urlFor(item.page));
       card.appendChild(photo(document, item.photo));
       const copy = el(document, 'span', { class: 'story-copy' });
-      copy.appendChild(el(document, 'span', { class: 'meta', text: item.label, key: ctx.t(`items.${i}.label`) }));
+      // A bare sequence number ("01") is not a label anyone reads; only a
+      // word label (a category, a date) is shown above the title.
+      if (item.label && !/^\d+$/.test(String(item.label).trim())) {
+        copy.appendChild(el(document, 'span', { class: 'meta', text: item.label, key: ctx.t(`items.${i}.label`) }));
+      }
       copy.appendChild(el(document, 'strong', { text: item.title, key: ctx.t(`items.${i}.title`) }));
-      const arrow = el(document, 'i', { text: '↗' });
-      arrow.setAttribute('aria-hidden', 'true');
-      copy.appendChild(arrow);
+      if (item.text) copy.appendChild(el(document, 'span', { class: 'story-text', text: item.text, key: ctx.t(`items.${i}.text`) }));
       card.appendChild(copy);
       grid.appendChild(card);
     });
@@ -391,10 +393,15 @@ const BLOCKS = {
   },
 
   steps(document, block, ctx) {
-    const wrap = el(document, 'div', { class: 'process' });
+    const wrap = el(document, 'ol', { class: 'process' });
     (block.items || []).forEach((item, i) => {
-      const step = el(document, 'div', { class: 'process-step' });
-      step.appendChild(el(document, 'h3', { text: item.title, key: ctx.t(`items.${i}.title`) }));
+      const step = el(document, 'li', { class: 'process-step' });
+      // A title that opens with a year ("2024–25 — Training at scale") is a
+      // dated milestone: the year is set apart so the row reads as a
+      // timeline. Titles without one render unchanged.
+      const dated = String(item.title || '').match(/^(\d{4}(?:[–-]\d{2,4})?)\s+[—–-]\s+(.+)$/);
+      if (dated) step.appendChild(el(document, 'span', { class: 'step-when', text: dated[1] }));
+      step.appendChild(el(document, 'h3', { text: dated ? dated[2] : item.title, key: ctx.t(`items.${i}.title`) }));
       if (item.text) step.appendChild(el(document, 'p', { text: item.text, key: ctx.t(`items.${i}.text`) }));
       wrap.appendChild(step);
     });
@@ -439,7 +446,7 @@ const BLOCKS = {
       a.appendChild(el(document, 'span', { class: 'meta', text: item.meta }));
       a.appendChild(el(document, 'h3', { text: item.title }));
       if (item.description) a.appendChild(el(document, 'p', { text: item.description }));
-      a.appendChild(el(document, 'span', { class: 'read', text: 'Read story ↗' }));
+      a.appendChild(el(document, 'span', { class: 'read', text: 'Read story' }));
       grid.appendChild(a);
     });
     frag.appendChild(grid);
@@ -552,7 +559,7 @@ const BLOCKS = {
       const links = el(document, 'span', { class: 'pub-links' });
       (item.editions || []).forEach((edition) => {
         if (!edition || !edition.url) return;
-        const link = el(document, 'a', { text: (edition.label || 'Download') + ' ↗' });
+        const link = el(document, 'a', { text: edition.label || 'Download' });
         link.href = edition.url;
         link.setAttribute('target', '_blank');
         link.setAttribute('rel', 'noopener');
@@ -580,7 +587,7 @@ const BLOCKS = {
       if (item.description) copy.appendChild(el(document, 'p', { text: item.description }));
       // An external URL wins; otherwise link to the target page.
       const action = el(document, 'a', { class: 'button primary' });
-      action.textContent = (item.linkLabel || 'Open') + ' ';
+      action.textContent = item.linkLabel || 'Open';
       if (item.url) {
         action.href = item.url;
         action.setAttribute('target', '_blank');
@@ -589,7 +596,6 @@ const BLOCKS = {
         action.setAttribute('data-open', item.target || 'home');
         action.href = ctx.urlFor(item.target || 'home');
       }
-      action.appendChild(el(document, 'span', { text: '↗' }));
       copy.appendChild(action);
       card.appendChild(copy);
       grid.appendChild(card);
@@ -604,7 +610,7 @@ const BLOCKS = {
       card.appendChild(el(document, 'span', { class: 'meta', text: item.meta }));
       const h3 = el(document, 'h3');
       if (item.url) {
-        const a = el(document, 'a', { text: (item.name || '') + ' ↗' });
+        const a = el(document, 'a', { text: item.name || '' });
         a.href = item.url;
         a.setAttribute('target', '_blank');
         a.setAttribute('rel', 'noopener');
@@ -721,8 +727,12 @@ const BLOCKS = {
   button(document, block) {
     const section = el(document, 'section', { class: 'cms-block cms-block-button' });
     if (block.heading) section.appendChild(el(document, 'h2', { text: block.heading }));
-    const link = el(document, 'a', { class: 'button primary', text: (block.label || 'Learn more') + ' ↗' });
+    const link = el(document, 'a', { class: 'button primary', text: block.label || 'Learn more' });
     link.href = block.url || '#';
+    if (/^https?:/.test(link.href)) {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener');
+    }
     section.appendChild(link);
     return section;
   },
@@ -889,6 +899,9 @@ const BLOCKS = {
     // block is a showcase and a plain grid is the right answer: a search box
     // on a homepage asks the reader to work before they have a question.
     const groups = groupByCountry(list);
+    if (block.layout !== 'directory' && !block.country && groups.length > 1) {
+      return partnerShowcase(document, groups, ctx, { limited: list.length < byCountry.length, total: byCountry.length });
+    }
     if (block.layout !== 'directory' || block.country || groups.length < 2) {
       const grid = el(document, 'div', { class: 'people-grid' });
       list.forEach((partner) => grid.appendChild(partnerCard(partner)));
@@ -985,6 +998,48 @@ const FLEX_TYPES = new Set(['text', 'imageText', 'gallery', 'callout', 'button',
 const pubYear = (item) => {
   const found = JSON.stringify(item || {}).match(/\b(?:19|20)\d{2}\b/g);
   return found ? Math.max(...found.map(Number)) : 0;
+};
+
+/** "02 — Why a joint centre" → "Why a joint centre". */
+const unnumbered = (value) => String(value || '').replace(/^\s*\d{1,2}\s+[—–-]\s+/, '');
+
+/**
+ * The partner block as a home-page showcase: each country is a named column
+ * of institutions, side by side. Names only — every record has one, which
+ * is not true of logos, so neither country is shown more richly than the
+ * other.
+ */
+const partnerShowcase = (document, groups, ctx, { limited, total }) => {
+  const wrap = el(document, 'div');
+  const grid = el(document, 'div', { class: 'partner-showcase' });
+  const widest = Math.max(...groups.map(([, members]) => members.length));
+  groups.forEach(([country, members]) => {
+    const col = el(document, 'section', {
+      class: 'partner-country' + (members.length === widest && members.length > 12 ? ' partner-country--wide' : '')
+    });
+    const h3 = el(document, 'h3', { text: country + ' ' });
+    h3.appendChild(el(document, 'span', { text: String(members.length) }));
+    col.appendChild(h3);
+    const ul = el(document, 'ul');
+    members.forEach((partner) => {
+      const li = el(document, 'li');
+      const a = el(document, 'a', { text: partner.name });
+      a.href = ctx.entryUrl ? ctx.entryUrl('partners', partner.slug) : '#';
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    col.appendChild(ul);
+    grid.appendChild(col);
+  });
+  wrap.appendChild(grid);
+  if (ctx.urlFor) {
+    const more = el(document, 'p', { class: 'partner-showcase-more' });
+    const a = el(document, 'a', { class: 'button', text: limited ? `See all ${total} partners` : 'About our partners' });
+    a.href = ctx.urlFor('partners');
+    more.appendChild(a);
+    wrap.appendChild(more);
+  }
+  return wrap;
 };
 
 const slugish = (value) =>
@@ -1097,70 +1152,6 @@ const discGroup = (document, { id, title, count, noun }) => {
 /* ---------- page renderers ---------- */
 
 /**
- * The animated water field shown when the home page has no header photo.
- *
- * Two families of streams — one entering from the left for Australia, one
- * from the right for India — converge on a confluence and leave the frame as
- * a single braided flow: the site's own thesis drawn as a picture. Everything
- * is stroke work on the ink background, so it stays quiet behind the display
- * text.
- *
- * All motion is CSS (dash drift, offset-path dots, a breathing contour), so
- * the chrome's prefers-reduced-motion rule silences the whole thing and the
- * static line drawing remains. `pathLength="1000"` normalises every pulse
- * path, letting one keyframe rule pace all of them.
- */
-const flowPath = (side, i) =>
-  side === 'L'
-    ? `M -60 ${150 + i * 46} C ${260 + i * 14} ${170 + i * 40}, ${520 - i * 8} ${300 + i * 26}, 700 ${418 + i * 22} ` +
-      `C 790 ${480 + i * 14}, 842 ${520 + i * 8}, 868 ${552 + i * 5} ` +
-      `C 930 ${620 + i * 6}, 1010 ${720 + i * 9}, ${1085 + i * 16} 940`
-    : `M 1500 ${70 + i * 40} C ${1280 - i * 10} ${120 + i * 34}, 1120 ${210 + i * 28}, 1000 ${330 + i * 20} ` +
-      `C 930 ${400 + i * 12}, 892 ${480 + i * 8}, 874 ${556 + i * 4} ` +
-      `C 920 ${640 + i * 7}, 990 ${750 + i * 10}, ${1060 + i * 14} 940`;
-
-const flowFieldSvg = () => {
-  const leftStyle = [
-    ['#3E948B', 1.6, 0.5], ['#8A96D8', 1.2, 0.38], ['#2E8078', 2, 0.55],
-    ['#CFE6E1', 1, 0.3], ['url(#flow-blend)', 2.2, 0.6], ['#2E8078', 1.3, 0.35]
-  ];
-  const rightStyle = [
-    ['#BC5A24', 1.8, 0.5], ['#D08A5B', 1.2, 0.35], ['#3E948B', 1.8, 0.5],
-    ['#8A96D8', 1.1, 0.3], ['#CFE6E1', 1, 0.32], ['#2E8078', 1.6, 0.45]
-  ];
-  const line = (d, [stroke, width, opacity]) =>
-    `<path class="flow-line" d="${d}" stroke="${stroke}" stroke-width="${width}" opacity="${opacity}"/>`;
-  const pulse = (d, dur) =>
-    `<path class="flow-line flow-pulse" d="${d}" pathLength="1000" stroke-dasharray="16 984" ` +
-    `stroke="#EAF6F3" stroke-width="1.6" opacity=".5" style="--dur:${dur}s"/>`;
-  const dot = (side, i, r, fill, dur, delay) =>
-    `<circle class="flow-dot" r="${r}" fill="${fill}" ` +
-    `style="offset-path: path('${flowPath(side, i)}'); --dur:${dur}s; --delay:${delay}s"/>`;
-
-  return (
-    `<svg class="flow-field" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">` +
-    `<defs><linearGradient id="flow-blend" x1="0" y1="0" x2="1" y2="0">` +
-    `<stop offset="0" stop-color="#2E8078"/><stop offset=".55" stop-color="#3E948B"/><stop offset="1" stop-color="#BC5A24"/>` +
-    `</linearGradient></defs>` +
-    `<ellipse class="flow-contour" cx="870" cy="560" rx="430" ry="250" transform="rotate(-14 870 560)" fill="none" stroke="rgba(255,255,255,.03)"/>` +
-    `<ellipse class="flow-contour" cx="870" cy="560" rx="320" ry="180" transform="rotate(-14 870 560)" fill="none" stroke="rgba(255,255,255,.04)" style="animation-delay:-4s"/>` +
-    `<ellipse class="flow-contour" cx="870" cy="560" rx="220" ry="120" transform="rotate(-14 870 560)" fill="none" stroke="rgba(255,255,255,.05)" style="animation-delay:-9s"/>` +
-    `<path class="flow-line" d="${flowPath('L', 2)}" stroke="#2E8078" stroke-width="40" opacity=".05"/>` +
-    `<path class="flow-line" d="${flowPath('R', 2)}" stroke="#BC5A24" stroke-width="34" opacity=".04"/>` +
-    leftStyle.map((style, i) => line(flowPath('L', i), style)).join('') +
-    rightStyle.map((style, i) => line(flowPath('R', i), style)).join('') +
-    pulse(flowPath('L', 0), 26) + pulse(flowPath('L', 4), 34) +
-    pulse(flowPath('R', 0), 30) + pulse(flowPath('R', 2), 38) +
-    dot('L', 1, 2.6, '#EAF4F2', 30, -3) + dot('L', 3, 2.2, '#CFE6E1', 40, -15) +
-    dot('L', 4, 3, '#EAF4F2', 36, -11) + dot('R', 1, 2.4, '#EBA173', 32, -7) +
-    dot('R', 3, 2, '#EAF4F2', 44, -19) + dot('R', 4, 2.8, '#EBA173', 38, -25) +
-    `</svg>` +
-    `<span class="flow-label flow-label--au" aria-hidden="true">Australia</span>` +
-    `<span class="flow-label flow-label--in" aria-hidden="true">India</span>`
-  );
-};
-
-/**
  * The brand mark: the confluence, reduced to a glyph. Two streams — teal
  * from the left, copper from the right, the same pair as the hero artwork —
  * meet and continue as one line. The container around it is the editable
@@ -1210,22 +1201,65 @@ export const brandMarkSvg = (shape = 'drop', variant = 'chrome') => {
     `</g></svg>`;
 };
 
-const standardHead = (document, page, { index, total }) => {
+/**
+ * The head of every page but home: a breadcrumb when the page sits under a
+ * header entry, the title, the lede, and the header photo beside them.
+ *
+ * The page's position in the site ("03 / 15") and its eyebrow are not shown:
+ * the breadcrumb says where you are in words, and the header already lists
+ * every page.
+ */
+const standardHead = (document, page, ctx = {}) => {
   const head = el(document, 'header', { class: 'page-head' });
-  head.appendChild(el(document, 'span', {
-    class: 'section-index',
-    text: String(index).padStart(2, '0') + ' / ' + String(total).padStart(2, '0')
-  }));
-  const inner = el(document, 'div');
+  const inner = el(document, 'div', { class: 'page-head-copy' });
   const intro = page.intro || {};
-  if (intro.eyebrow != null) inner.appendChild(el(document, 'p', { class: 'eyebrow', text: intro.eyebrow }));
-  inner.appendChild(el(document, 'h1', { text: intro.title || page.menuName }));
-  if (intro.lede != null) inner.appendChild(el(document, 'p', { class: 'lede', text: intro.lede }));
+  if (ctx.parent) inner.appendChild(crumbs(document, ctx, [ctx.parent]));
+  inner.appendChild(multiline(document, el(document, 'h1'), intro.title || page.menuName));
+  if (intro.lede) inner.appendChild(el(document, 'p', { class: 'lede', text: intro.lede }));
   head.appendChild(inner);
   applyTextControls(head, intro);
-  applyCoverControls(head, page.heroImage);
+  if (page.heroImage?.image) {
+    head.classList.add('has-cover');
+    const media = el(document, 'figure', { class: 'page-head-media' });
+    media.appendChild(photo(document, page.heroImage, { alt: page.heroImage.alt || '', lazy: false }));
+    head.appendChild(media);
+  }
   return head;
 };
+
+/** Home › parent › … as a labelled trail. */
+const crumbs = (document, ctx, trail) => {
+  const nav = el(document, 'nav', { class: 'crumbs' });
+  nav.setAttribute('aria-label', 'Breadcrumb');
+  const home = el(document, 'a', { text: 'Home' });
+  home.href = ctx.urlFor ? ctx.urlFor('home') : '/';
+  nav.appendChild(home);
+  trail.forEach(({ label, href }) => {
+    const sep = el(document, 'span', { text: '/' });
+    sep.setAttribute('aria-hidden', 'true');
+    nav.appendChild(sep);
+    const a = el(document, 'a', { text: label });
+    a.href = href;
+    nav.appendChild(a);
+  });
+  return nav;
+};
+
+/*
+ * The meander from the AIWC logo, drawn along the photo's left edge (and its
+ * top edge on narrow screens, where the photo sits under the text). The same
+ * curve is the photo's CSS mask, so the river runs exactly along the bank.
+ * Stretched with the frame; the stroke keeps its width regardless.
+ */
+const heroRiverSvg = () =>
+  '<svg class="hero-river" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
+  '<defs>' +
+  '<linearGradient id="river-v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#97DBF9"/><stop offset=".5" stop-color="#54C1F3"/><stop offset="1" stop-color="#0F9FE7"/></linearGradient>' +
+  '<linearGradient id="river-h" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#97DBF9"/><stop offset=".5" stop-color="#54C1F3"/><stop offset="1" stop-color="#0F9FE7"/></linearGradient>' +
+  '</defs>' +
+  '<path class="river-v" d="M15 0C2 14 25 27 14 44C3 61 26 72 13 88C9 93 8 97 9 100" stroke="url(#river-v)" stroke-width="14"/>' +
+  '<path class="river-h" d="M0 12C14 2 27 22 44 12C61 3 72 21 88 11C93 8 97 8 100 9" stroke="url(#river-h)" stroke-width="10"/>' +
+  '</svg>';
 
 const homeHero = (document, page, ctx) => {
   const hero = page.hero || {};
@@ -1235,37 +1269,32 @@ const homeHero = (document, page, ctx) => {
   const wrap = el(document, 'div', { class: 'home-hero' });
   const copy = el(document, 'div', { class: 'hero-copy' });
   const inner = el(document, 'div', { class: 'hero-copy-inner' });
-  inner.appendChild(el(document, 'p', { class: 'eyebrow', text: intro.eyebrow }));
+  if (intro.eyebrow) inner.appendChild(el(document, 'p', { class: 'eyebrow', text: intro.eyebrow }));
   inner.appendChild(multiline(document, el(document, 'h1'), intro.title));
-  inner.appendChild(el(document, 'p', { class: 'lede', text: intro.lede }));
-  const actions = el(document, 'div', { class: 'hero-actions' });
-  (hero.actions || []).forEach((a) => actions.appendChild(pageLink(document, ctx, a)));
-  inner.appendChild(actions);
+  if (intro.lede) inner.appendChild(el(document, 'p', { class: 'lede', text: intro.lede }));
+  // The CMS writes the buttons to hero.actions; older content kept them at
+  // the page's top level, where nothing read them.
+  const buttons = hero.actions?.length ? hero.actions : page.actions || [];
+  if (buttons.length) {
+    const actions = el(document, 'div', { class: 'hero-actions' });
+    buttons.forEach((a) => actions.appendChild(pageLink(document, ctx, a)));
+    inner.appendChild(actions);
+  }
   copy.appendChild(inner);
   applyTextControls(copy, intro);
   wrap.appendChild(copy);
 
-  // A photo makes the classic photographic hero; no photo brings up the
-  // animated confluence artwork instead. The CMS's "Header photo" field is
-  // the switch, so editors can move between the two without a deploy.
-  const stage = el(document, 'div', { class: 'hero-image-stage' });
-  if (hero.stageAlt) stage.setAttribute('aria-label', hero.stageAlt);
-  if (page.heroImage?.image) {
-    stage.appendChild(photo(document, page.heroImage, { alt: hero.imageAlt || '', lazy: false, className: 'hero-image-main' }));
-    if (hero.label) {
-      stage.appendChild(multiline(document, el(document, 'div', { class: 'hero-image-label', key: t('label') }), hero.label));
-    }
-    if (hero.caption) {
-      stage.appendChild(multiline(document, el(document, 'div', { class: 'hero-image-caption', key: t('caption') }), hero.caption));
-    }
-  } else {
-    stage.className = 'hero-image-stage hero-flow-stage';
-    if (!hero.stageAlt) stage.setAttribute('aria-hidden', 'true');
-    stage.innerHTML = flowFieldSvg();
+  // With no header photo the hero is the words alone, full width.
+  if (!page.heroImage?.image) {
+    wrap.classList.add('home-hero--text');
+    return wrap;
   }
-  const index = el(document, 'div', { class: 'hero-image-index', text: '↓' });
-  index.setAttribute('aria-hidden', 'true');
-  stage.appendChild(index);
+  const stage = el(document, 'div', { class: 'hero-image-stage' });
+  stage.appendChild(photo(document, page.heroImage, { alt: hero.imageAlt || page.heroImage.alt || '', lazy: false, className: 'hero-image-main' }));
+  stage.insertAdjacentHTML('beforeend', heroRiverSvg());
+  if (hero.caption) {
+    stage.appendChild(multiline(document, el(document, 'div', { class: 'hero-image-caption', key: t('caption') }), hero.caption));
+  }
   wrap.appendChild(stage);
   return wrap;
 };
@@ -1294,12 +1323,25 @@ export function renderPage(document, page, ctx) {
 
   const core = [];
   const flex = [];
+  let previous = null;
   (page.blocks || []).forEach((block, i) => {
     const render = BLOCKS[block?.type];
     if (!render) return;
     const node = render(document, block, blockCtx(block, i));
     if (!node) return;
+    // A button straight after a callout is that callout's action: it joins
+    // the callout's band rather than floating below it as a block of its own.
+    if (block.type === 'button' && previous?.type === 'callout' && previous.node) {
+      const link = node.querySelector('a');
+      if (link) {
+        link.classList.remove('primary');
+        previous.node.appendChild(link);
+        previous = null;
+        return;
+      }
+    }
     (FLEX_TYPES.has(block.type) ? flex : core).push(node);
+    previous = { type: block.type, node };
   });
 
   // The page's in-page navigation mode ("jump" | "tabs" | "collapse"), chosen
@@ -1318,8 +1360,12 @@ export function renderPage(document, page, ctx) {
 
   if (page.template === 'home') {
     section.appendChild(homeHero(document, page, ctx));
-    core.forEach((n) => section.appendChild(n));
-    if (flex.length) section.appendChild(flexWrap(document, flex));
+    const homeBody = el(document, 'div', { class: 'home-body' });
+    const body = el(document, 'div', { class: 'section-body' });
+    core.forEach((n) => body.appendChild(n));
+    homeBody.appendChild(body);
+    if (flex.length) homeBody.appendChild(flexWrap(document, flex));
+    section.appendChild(homeBody);
     return section;
   }
 
@@ -1348,14 +1394,6 @@ const flexWrap = (document, nodes) => {
  * classes as the authored pages, so they inherit the stylesheet rather than
  * introducing a second visual language.
  */
-
-const backLink = (document, label, href) => {
-  const p = el(document, 'p', { class: 'eyebrow' });
-  const a = el(document, 'a', { text: '← ' + label });
-  a.href = href;
-  p.appendChild(a);
-  return p;
-};
 
 /** A labelled fact list — institution, qualification, contact, profiles. */
 const factList = (document, rows) => {
@@ -1394,14 +1432,13 @@ export function renderPerson(document, person, ctx) {
 
   const head = el(document, 'header', { class: 'page-head' });
   const inner = el(document, 'div');
-  inner.appendChild(backLink(
-    document,
-    person.country === 'Australia' ? 'Our people in Australia' : 'Our people in India',
-    ctx.urlFor('people')
-  ));
+  inner.appendChild(crumbs(document, ctx, [{ label: 'Our people', href: ctx.urlFor('people') }]));
   inner.appendChild(el(document, 'h1', { text: person.name }));
-  const sub = [person.designation, person.institute].filter(Boolean).join(' · ');
-  if (sub) inner.appendChild(el(document, 'p', { class: 'lede', text: sub }));
+  if (person.designation || person.institute) {
+    const sub = el(document, 'p', { class: 'lede' });
+    multiline(document, sub, [person.designation, person.institute].filter(Boolean).join('\n'));
+    inner.appendChild(sub);
+  }
   head.appendChild(inner);
   wrap.appendChild(head);
 
@@ -1469,9 +1506,9 @@ export function renderPartner(document, partner, ctx) {
 
   const head = el(document, 'header', { class: 'page-head' });
   const inner = el(document, 'div');
-  inner.appendChild(backLink(document, 'All partners', ctx.urlFor('partners')));
+  inner.appendChild(crumbs(document, ctx, [{ label: 'Our partners', href: ctx.urlFor('partners') }]));
   inner.appendChild(el(document, 'h1', { text: partner.name }));
-  inner.appendChild(el(document, 'p', { class: 'lede', text: partner.country + ' · Partner institution' }));
+  if (partner.country) inner.appendChild(el(document, 'p', { class: 'lede', text: 'Partner institution in ' + partner.country }));
   head.appendChild(inner);
   wrap.appendChild(head);
 

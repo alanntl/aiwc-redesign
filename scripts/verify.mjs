@@ -80,9 +80,15 @@ for (const file of docs) {
   if (h1s.length !== 1) fail(rel, `expected 1 <h1>, found ${h1s.length}`);
   else if (!h1s[0].textContent.trim()) fail(rel, 'empty <h1>');
 
-  /* navigation present and pointing somewhere real */
-  if (document.querySelectorAll('.side-nav .nav-tab').length !== PAGES.length) {
-    fail(rel, 'rail navigation does not list every page');
+  /* navigation present and pointing somewhere real: the logo is home, and
+     every other published page is reachable from the header menu */
+  const navSlugs = new Set(
+    [...document.querySelectorAll('[data-site-nav] a[data-tab]')].map((a) => a.getAttribute('data-tab'))
+  );
+  if (PAGES[0] && document.querySelector('.brand[href]')) navSlugs.add(PAGES[0].slug);
+  const missing = PAGES.filter((p) => !navSlugs.has(p.slug)).map((p) => p.slug);
+  if (missing.length) {
+    fail(rel, `header navigation does not list: ${missing.join(', ')} — add them to "nav" in content/site.json`);
   }
 
   /* internal links resolve to a built file */

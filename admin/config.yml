@@ -324,6 +324,12 @@ collections:
               - { label: "Small label", name: "eyebrow", widget: "string", required: false }
               - { label: "Heading", name: "title", widget: "string" }
               - { label: "Text", name: "lede", widget: "text", required: false }
+              - label: "Background"
+                name: "tone"
+                widget: "select"
+                required: false
+                default: ""
+                options: [{ label: "White", value: "" }, { label: "Pale blue band", value: "sky" }]
               - label: "Cards"
                 name: "items"
                 widget: "list"
@@ -342,6 +348,7 @@ collections:
                     hint: "Choose a page on this site."
                   - { label: "Small label", name: "label", widget: "string", required: false }
                   - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Short description", name: "text", widget: "text", required: false }
                   - { label: "Photo", name: "photo", widget: "object", collapsed: true, fields: *photoFields }
               - { label: "i18n", name: "i18n", widget: "hidden", required: false }
           - label: "Numbered steps"

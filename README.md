@@ -10,9 +10,11 @@ The Centre's website: 15 pages, 108 researcher profiles and 33 partner
 institutions, built as static HTML and published to GitHub Pages.
 
 Content from [aiwc.org.au](https://aiwc.org.au), built on the MARVI site's
-structure: the same chrome, the same 24 block types, the same per-block layout
-controls and the same CMS. The palette is AIWC's own — cool deep water,
-indigo and ochre for the two countries, rather than MARVI's green and copper.
+structure: the same block types, the same per-block layout controls and the
+same CMS. The design is AIWC's own: a white page, one top navigation, the
+Anek Latin typeface, and the azure of the AIWC logo as the only brand colour.
+The logo's river is the one decorative gesture — it forms the edge of the
+home page photograph.
 
 Two things exist here that the MARVI site has no equivalent for, because AIWC
 has content MARVI does not: the searchable **researcher directory** and the

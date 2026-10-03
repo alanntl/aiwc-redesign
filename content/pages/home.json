@@ -5,17 +5,25 @@
   "published": true,
   "template": "home",
   "intro": {
-    "eyebrow": "Australia India Water Centre · Established 2020",
+    "eyebrow": "",
     "title": "Two countries.\nOne water problem.",
-    "lede": "Water is a global resource that matters to everyone and everything we do. More than ever, we need to understand and work together on water issues and challenges, now and in the future — and those issues need to be addressed with collective concerns, experiences, learnings and efforts.",
+    "lede": "The Australia India Water Centre is a partnership of {{partnerInstitutions}} institutions and {{researchers}} researchers, working together on research, education, training and outreach for sustainable water futures.",
     "eyebrowSize": 100,
-    "titleSize": 70,
+    "titleSize": 100,
     "ledeSize": 100,
     "textAlign": "left",
-    "textPosition": "bottom",
+    "textPosition": "middle",
     "textWidth": 100,
     "textOffsetX": 0,
     "textOffsetY": 0
+  },
+  "heroImage": {
+    "image": "/assets/photos/page-aiwc5-conference-7.jpg",
+    "zoom": 100,
+    "positionX": 50,
+    "positionY": 50,
+    "fit": "cover",
+    "alt": "AIWC@5 delegates gathered for a group photograph"
   },
   "menuImage": {
     "image": "/assets/photos/page-aiwc5-conference-0.jpg",
@@ -24,173 +32,169 @@
     "positionY": 50,
     "fit": "cover"
   },
-  "sectionNav": "tabs",
-  "introTab": "The premise",
+  "hero": {
+    "imageAlt": "AIWC@5 delegates gathered for a group photograph",
+    "actions": [
+      {
+        "label": "Our work",
+        "page": "work",
+        "primary": true
+      },
+      {
+        "label": "Meet the researchers",
+        "page": "people",
+        "primary": false
+      }
+    ]
+  },
+  "sectionNav": "none",
   "blocks": [
     {
-      "type": "statement",
-      "label": "The premise",
-      "quote": "Water management is not just a technical challenge."
-    },
-    {
-      "type": "sourceNote",
-      "parts": [
+      "type": "storyCards",
+      "title": "What we do",
+      "lede": "AIWC’s key activities are structured into four distinct areas. Each has two or more programme leaders, who meet six times a year to plan, design and oversee activities across partners and stakeholders.",
+      "items": [
         {
-          "text": "AIWC vision — the Centre acts as a catalyst for Australian and Indian partners to break down silos, think differently, and facilitate sustainable water futures through bilateral partnerships and transdisciplinary approaches."
+          "page": "research",
+          "title": "Research",
+          "text": "Joint projects across Australian and Indian institutions, several funded under India’s SPARC scheme.",
+          "photo": {
+            "image": "/assets/photos/page-our-work-0.jpg",
+            "zoom": 100,
+            "positionX": 50,
+            "positionY": 50,
+            "fit": "cover",
+            "alt": "Field researchers sampling water"
+          }
+        },
+        {
+          "page": "education",
+          "title": "Education",
+          "text": "A transdisciplinary Master’s program in Sustainable Water Management.",
+          "photo": {
+            "image": "/assets/photos/page-our-work-1.jpg",
+            "zoom": 100,
+            "positionX": 50,
+            "positionY": 50,
+            "fit": "cover",
+            "alt": "Students in a teaching session"
+          }
+        },
+        {
+          "page": "training",
+          "title": "Training & capacity building",
+          "text": "Five programmes, from village-level groundwater monitoring to dam safety training.",
+          "photo": {
+            "image": "/assets/photos/page-our-work-2.jpg",
+            "zoom": 100,
+            "positionX": 50,
+            "positionY": 50,
+            "fit": "cover",
+            "alt": "Training participants at a field site"
+          }
+        },
+        {
+          "page": "outreach",
+          "title": "Outreach",
+          "text": "Workshops, webinars and technical exchange between researchers, policy-makers and practitioners.",
+          "photo": {
+            "image": "/assets/photos/page-our-work-3.jpg",
+            "zoom": 100,
+            "positionX": 50,
+            "positionY": 50,
+            "fit": "cover",
+            "alt": "Workshop participants in discussion"
+          }
         }
       ]
     },
     {
-      "type": "statement",
-      "label": "01 — The partnership in numbers",
-      "quote": "A network, not a project.",
-      "metrics": [
+      "type": "storyCards",
+      "tone": "sky",
+      "title": "News and events",
+      "lede": "Symposia, podcasts and the WATER TALKS webinar series — open to researchers, policy-makers, practitioners and students across Australia, India and the Asia Pacific.",
+      "items": [
         {
-          "value": "33",
-          "label": "Partner institutions across two countries"
+          "page": "aiwc5",
+          "label": "Symposium",
+          "title": "AIWC@5: five years of Australia–India water collaboration",
+          "text": "The Partners Forum and International Symposium at the Whitlam Institute, Western Sydney University.",
+          "photo": {
+            "image": "/assets/photos/page-aiwc5-conference-0.jpg",
+            "zoom": 100,
+            "positionX": 50,
+            "positionY": 50,
+            "fit": "cover",
+            "alt": "Speakers at the AIWC@5 symposium"
+          }
         },
         {
-          "value": "108",
-          "label": "Researchers with published profiles"
+          "page": "12",
+          "label": "Webinars",
+          "title": "Water Dialogues",
+          "text": "Regular webinars that bring together water professionals, researchers and policy makers from both countries.",
+          "photo": {
+            "image": "/assets/photos/inception-webinar-0.jpg",
+            "zoom": 100,
+            "positionX": 50,
+            "positionY": 6,
+            "fit": "cover",
+            "alt": "Flyer for the webinar series on hydro-diplomacy"
+          }
         },
         {
-          "value": "49",
-          "label": "Based in Australia"
-        },
-        {
-          "value": "59",
-          "label": "Based in India"
-        },
-        {
-          "value": "10,000+",
-          "label": "Villages reached by the MARVI groundwater programme"
-        }
-      ]
-    },
-    {
-      "type": "sourceNote",
-      "parts": [
-        {
-          "text": "Leading Australian and Indian institutions, government agencies and water businesses came together to form the Australia India Water Centre. Five years on, this is its shape."
+          "page": "waterwise",
+          "label": "Blog",
+          "title": "WaterWise",
+          "text": "A virtual water dialogue where participants are active contributors, not passive receivers of knowledge.",
+          "photo": {
+            "image": "/assets/photos/page-waterwise-blog-0.png",
+            "zoom": 100,
+            "positionX": 50,
+            "positionY": 42,
+            "fit": "cover",
+            "alt": "The WaterWise logo"
+          }
         }
       ]
     },
     {
       "type": "banner",
-      "eyebrow": "02 — Why a joint centre",
-      "title": "The same problems,\nfrom opposite ends\nof one ocean.",
-      "tabLabel": "The problem",
+      "title": "Who we are",
       "lede": ""
     },
     {
       "type": "split",
       "left": {
         "kind": "prose",
+        "lead": "The Centre acts as a catalyst for Australian and Indian partners to break down silos, think differently, and facilitate sustainable water futures through bilateral partnerships and transdisciplinary approaches.",
         "paragraphs": [
-          "Australia and India’s water issues and challenges share many common elements, including natural extremes of floods and droughts, increasing competition for water between urban, peri-urban and rural sectors and increased threats to water security from climate change. There are also pressures due to the over-exploitation and water quality degradation of surface and groundwater resources."
+          "Water is a global resource that matters to everyone and everything we do. More than ever, we need to understand and work together on water issues and challenges, now and in the future — and those issues need to be addressed with collective concerns, experiences, learnings and efforts.",
+          "Leading Australian and Indian institutions, government agencies and water businesses came together to form the Centre in 2020, led by Western Sydney University in Australia and IIT Guwahati in India."
+        ],
+        "actions": [
+          {
+            "label": "About AIWC",
+            "page": "about",
+            "primary": true
+          }
         ]
       },
       "right": {
-        "kind": "prose",
-        "paragraphs": [
-          "Although India has a much larger population than Australia, the Gross Domestic Product of both countries heavily relies on access to fresh water. Therefore, effective surface and groundwater management plays a critical role in food production, sustaining livelihoods, human well-being, and socio-economic development.",
-          "Both countries are going through increasing urbanisation, which has added to the complexity of managing stormwater, provision of sanitation services, surface and groundwater pollution and the demands for drinking water and other uses. Further, India is currently undergoing a rapid socio-economic transformation with changing demographics and the need to sustain the farming sector; for this, water availability of the required quality and quantity will be critical. As such, both countries can partner for mutual benefits and learn significantly from each other’s experiences and strengths."
-        ]
+        "kind": "image",
+        "photo": {
+          "image": "/assets/photos/page-aiwc5-conference-3.jpg",
+          "zoom": 100,
+          "positionX": 50,
+          "positionY": 50,
+          "fit": "cover",
+          "alt": "Partners in a round-table discussion at AIWC@5"
+        }
       }
     },
     {
-      "type": "storyCards",
-      "eyebrow": "03 — What we do",
-      "title": "Four programmes, one agenda.",
-      "items": [
-        {
-          "title": "Research",
-          "photo": {
-            "image": "/assets/photos/page-our-work-0.jpg",
-            "alt": "Field researchers sampling water",
-            "positionX": 50,
-            "positionY": 50
-          },
-          "page": "research",
-          "label": "01"
-        },
-        {
-          "title": "Education",
-          "photo": {
-            "image": "/assets/photos/page-our-work-1.jpg",
-            "alt": "Students in a teaching session",
-            "positionX": 50,
-            "positionY": 50
-          },
-          "page": "education",
-          "label": "02"
-        },
-        {
-          "title": "Training & capacity building",
-          "photo": {
-            "image": "/assets/photos/page-our-work-2.jpg",
-            "alt": "Training participants at a field site",
-            "positionX": 50,
-            "positionY": 50
-          },
-          "page": "training",
-          "label": "03"
-        },
-        {
-          "title": "Outreach",
-          "photo": {
-            "image": "/assets/photos/page-our-work-3.jpg",
-            "alt": "Workshop participants in discussion",
-            "positionX": 50,
-            "positionY": 50
-          },
-          "page": "outreach",
-          "label": "04"
-        }
-      ],
-      "tabLabel": "What we do",
-      "lede": "AIWC’s key activities are structured into four distinct areas. Each has two or more programme leaders, who meet six times a year to plan, design and oversee activities across partners and stakeholders."
-    },
-    {
-      "type": "storyCards",
-      "eyebrow": "04 — The people",
-      "title": "Expertise that crosses disciplines,\nnot just borders.",
-      "items": [
-        {
-          "title": "Researchers across {{researcherInstitutions}} institutions",
-          "text": "Every profile carries their qualifications, areas of interest, current projects and key publications — searchable by country and institution.",
-          "photo": {
-            "image": "/assets/photos/page-aiwc5-conference-2.jpg",
-            "zoom": 100,
-            "positionX": 50,
-            "positionY": 50,
-            "fit": "cover"
-          },
-          "page": "people",
-          "label": "108"
-        },
-        {
-          "title": "Partner institutions",
-          "text": "Universities, national research institutes, government agencies and water businesses in Australia and India.",
-          "photo": {
-            "image": "/assets/photos/page-aiwc5-conference-3.jpg",
-            "zoom": 100,
-            "positionX": 50,
-            "positionY": 50,
-            "fit": "cover"
-          },
-          "page": "partners",
-          "label": "33"
-        }
-      ],
-      "tabLabel": "The people",
-      "lede": "AIWC partners bring engineering, ecology, social science, law and agriculture to the same table — which is what makes it a genuinely transdisciplinary group rather than a network of hydrologists."
-    },
-    {
       "type": "banner",
-      "eyebrow": "05 — The journey",
       "title": "Five years, and the next five.",
-      "tabLabel": "The journey",
       "lede": ""
     },
     {
@@ -220,30 +224,21 @@
     },
     {
       "type": "banner",
-      "eyebrow": "06 — Our partners",
-      "title": "Who is in the room.",
-      "tabLabel": "Our partners",
-      "lede": "Universities, national institutes, government departments and water businesses — eleven partners in Australia, twenty-two in India."
+      "title": "Our partners",
+      "lede": "Universities, national institutes, government departments and water businesses in Australia and India."
     },
     {
-      "type": "partnerDirectory",
-      "limit": 12
+      "type": "partnerDirectory"
     },
     {
       "type": "callout",
       "heading": "AIWC is looking for partners for the 2030 agenda.",
       "body": "Climate-resilient agriculture, groundwater security, PFAS and water quality, digital water tools, joint degree programmes and micro-credentials — the priorities set by partners at AIWC@5. If your institution works in any of them, we would like to hear from you."
-    }
-  ],
-  "actions": [
-    {
-      "primary": true,
-      "page": "work",
-      "label": "How we work"
     },
     {
-      "page": "people",
-      "label": "Meet the researchers"
+      "type": "button",
+      "label": "Contact the Centre",
+      "url": "/contact/"
     }
   ]
 }

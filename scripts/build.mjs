@@ -1,7 +1,7 @@
 /**
  * Static site build: content/ → _site/, one real document per URL.
  *
- * index.html is the chrome template only — head, CSS, rail, footer. The
+ * index.html is the chrome template only — head, CSS, header, footer. The
  * build renders every page and every collection entry from data through
  * src/templates.mjs, so there is exactly one rendering path and the CMS
  * preview can import the same module.
@@ -18,7 +18,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseHTML } from 'linkedom';
 import { renderPage, renderPerson, renderPartner, brandMarkSvg, BRAND_SHAPES } from '../src/templates.mjs';
-import { buildRegistry, loadCollections, loadSite, navTree, urlFor, urlForEntry } from '../src/registry.mjs';
+import { buildRegistry, buildNav, loadCollections, loadSite, navParentOf, urlFor, urlForEntry } from '../src/registry.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, '_site');
@@ -37,6 +37,8 @@ const LANGS = SITE.languages;
 
 const template = readFileSync(join(ROOT, 'index.html'), 'utf8');
 const PAGES = buildRegistry(ROOT);
+// The header menu, grouped as content/site.json `nav` says (see buildNav).
+const NAV = buildNav(PAGES, SITE.nav);
 const { people, partners } = loadCollections(ROOT);
 /* ── counts that appear in prose ─────────────────────────────────────────
  *
@@ -126,6 +128,12 @@ const entryHref = (lang, kind, slug) => urlForEntry(lang, kind, slug, BASE);
  * and partner records and a way to link to their pages, so the context is
  * MARVI's plus those three.
  */
+/** The breadcrumb for a page nested under a header entry. */
+const parentLink = (lang, page) => {
+  const parent = navParentOf(NAV, page.slug);
+  return parent ? { label: parent.menuName, href: href(lang, parent) } : null;
+};
+
 const ctxFor = (lang, extra = {}) => ({
   people,
   partners,
@@ -138,7 +146,7 @@ const ctxFor = (lang, extra = {}) => ({
 /* ── chrome ─────────────────────────────────────────────────────────── */
 
 /**
- * Build the shell once: rail navigation, language switch, footer links.
+ * Build the shell once: header navigation, language switch, footer links.
  * `activeSlug` marks the current page; `panel` is the rendered content.
  */
 function composeDocument(lang, activeSlug, panel, { langBase = '' } = {}) {
@@ -153,40 +161,51 @@ function composeDocument(lang, activeSlug, panel, { langBase = '' } = {}) {
   // Only external scripts are stripped — behaviour ships as /assets/app.mjs.
   document.querySelectorAll('script[src]').forEach((n) => n.remove());
 
-  /* rail navigation, from the registry */
-  for (const nav of document.querySelectorAll('.side-nav')) {
-    nav.textContent = '';
-    // MARVI's rail markup exactly: thumbnail, number, name, arrow. The
-    // stylesheet targets these class names, so they are not negotiable.
-    let top = 0;
-    navTree(PAGES).forEach(({ page, depth }) => {
-      const link = document.createElement('a');
-      link.className = 'nav-tab' + (depth ? ' is-child' : '');
-      link.setAttribute('href', href(lang, page));
-      link.setAttribute('data-tab', page.slug);
-      if (page.slug === activeSlug) link.setAttribute('aria-current', 'page');
-
-      const thumb = document.createElement('img');
-      thumb.className = 'nav-thumb';
-      thumb.setAttribute('alt', '');
-      thumb.setAttribute('aria-hidden', 'true');
-      const menuImage = page.menuImage || page.heroImage;
-      if (menuImage?.image) thumb.setAttribute('src', menuImage.image);
-
-      const number = document.createElement('span');
-      number.className = 'nav-number';
-      number.textContent = depth ? '—' : String(++top).padStart(2, '0');
-
-      const name = document.createElement('span');
-      name.className = 'nav-name';
-      name.textContent = page.menuName;
-
-      const arrow = document.createElement('span');
-      arrow.className = 'nav-arrow';
-      arrow.textContent = '↗';
-
-      link.append(thumb, number, name, arrow);
-      nav.appendChild(link);
+  /* header navigation, from site.json `nav` */
+  const CHEVRON = '<svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2 4.5 6 8.5 10 4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+  const navLink = (page, className) => {
+    const a = document.createElement('a');
+    if (className) a.className = className;
+    a.setAttribute('href', href(lang, page));
+    a.setAttribute('data-tab', page.slug);
+    if (page.slug === activeSlug) a.setAttribute('aria-current', 'page');
+    a.textContent = page.menuName;
+    return a;
+  };
+  for (const list of document.querySelectorAll('[data-site-nav]')) {
+    list.textContent = '';
+    NAV.forEach(({ page, children, button }) => {
+      const li = document.createElement('li');
+      if (button) {
+        li.className = 'nav-item nav-item--cta';
+        li.appendChild(navLink(page, 'nav-cta'));
+        list.appendChild(li);
+        return;
+      }
+      const current = page.slug === activeSlug || children.some((c) => c.slug === activeSlug);
+      li.className = 'nav-item' + (children.length ? ' has-menu' : '') + (current ? ' is-current' : '');
+      li.appendChild(navLink(page, 'nav-link'));
+      if (children.length) {
+        const menuId = 'menu-' + page.slug;
+        const more = document.createElement('button');
+        more.className = 'nav-more';
+        more.setAttribute('type', 'button');
+        more.setAttribute('aria-expanded', 'false');
+        more.setAttribute('aria-controls', menuId);
+        more.setAttribute('aria-label', 'More in ' + page.menuName);
+        more.innerHTML = CHEVRON;
+        li.appendChild(more);
+        const menu = document.createElement('ul');
+        menu.className = 'nav-menu';
+        menu.id = menuId;
+        children.forEach((child) => {
+          const item = document.createElement('li');
+          item.appendChild(navLink(child));
+          menu.appendChild(item);
+        });
+        li.appendChild(menu);
+      }
+      list.appendChild(li);
     });
   }
 
@@ -195,30 +214,14 @@ function composeDocument(lang, activeSlug, panel, { langBase = '' } = {}) {
     n.setAttribute('href', href(lang, PAGES[0]));
   });
 
-  /* The rail foot's institution count comes from the real partner records,
-     so it can never drift from the site again (it shipped as "27" for a
-     while after the partner list had grown to 33). */
-  const foot = document.querySelector('.sidebar-foot');
-  if (foot && foot.firstChild?.nodeType === 3 && partners.length) {
-    foot.firstChild.textContent = `${partners.length} institutions`;
-  }
-
-  /* the brand mark — the confluence glyph in the shape content/brand.json
-     picked. The chrome's CSS-drawn fallback stays for anything unbuilt. */
+  /* the brand mark — the uploaded logo, or the drawn confluence glyph in
+     the shape content/brand.json picked when there is none. */
   const markHtml = () => (BRAND_LOGO
     ? `<img src="${logoSrc()}" alt="">`
     : brandMarkSvg(BRAND_SHAPE, 'chrome'));
   document.querySelectorAll('.brand-mark').forEach((n) => {
     n.innerHTML = markHtml();
   });
-  const mobileBrand = document.querySelector('.mobile-brand');
-  if (mobileBrand && !mobileBrand.querySelector('.brand-mark')) {
-    const mark = document.createElement('span');
-    mark.className = 'brand-mark brand-mark--bar';
-    mark.setAttribute('aria-hidden', 'true');
-    mark.innerHTML = markHtml();
-    mobileBrand.prepend(mark);
-  }
 
   /* language switch — only meaningful once a second language exists */
   const select = document.getElementById('lang-select');
@@ -240,7 +243,7 @@ function composeDocument(lang, activeSlug, panel, { langBase = '' } = {}) {
   const footerNav = document.querySelector('[data-footer-nav]');
   if (footerNav) {
     footerNav.textContent = '';
-    for (const page of PAGES.filter((p) => !p.parent).slice(0, 6)) {
+    for (const { page } of NAV) {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.setAttribute('href', href(lang, page));
@@ -315,10 +318,15 @@ function applyHead(document, { lang, title, description, canonical, image, alter
   };
 
   meta('name', 'description', description);
+  // A preview copy of the site (content/site.json "noindex": true) must not
+  // compete with aiwc.org.au in search results.
+  if (SITE.noindex) meta('name', 'robots', 'noindex, nofollow');
   link('canonical', canonical);
   const icon = document.createElement('link');
   icon.setAttribute('rel', 'icon');
-  if (BRAND_LOGO) {
+  if (existsSync(join(ROOT, 'assets/brand/aiwc-river.png'))) {
+    icon.setAttribute('href', `${BASE}/assets/brand/aiwc-river.png`);
+  } else if (BRAND_LOGO) {
     icon.setAttribute('href', logoSrc());
   } else {
     icon.setAttribute('type', 'image/svg+xml');
@@ -372,7 +380,7 @@ for (const lang of LANGS) {
     const panel = renderPage(
       parseHTML('<div></div>').document,
       page,
-      ctxFor(lang, { index: i + 1, total: PAGES.length })
+      ctxFor(lang, { index: i + 1, total: PAGES.length, parent: parentLink(lang, page) })
     );
     const isHome = page.slug === PAGES[0].slug;
     const rel = href(lang, page);
@@ -557,7 +565,12 @@ write(
     urls.map((u) => `  <url><loc>${SITE_URL}${u}</loc></url>`).join('\n') +
     '\n</urlset>\n'
 );
-write('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}${BASE}/sitemap.xml\n`);
+write(
+  'robots.txt',
+  SITE.noindex
+    ? 'User-agent: *\nDisallow: /\n'
+    : `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}${BASE}/sitemap.xml\n`
+);
 
 console.log(
   `Built ${count} documents into _site/ ` +

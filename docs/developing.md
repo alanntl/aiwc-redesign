@@ -19,7 +19,7 @@ npm run check     # all three
 npm run serve     # build + serve on :8913
 ```
 
-**`index.html` is the chrome template only** — head, CSS, rail, footer. It
+**`index.html` is the chrome template only** — head, CSS, header, footer. It
 contains no page content. The build strips external scripts and renders every
 panel from data through `src/templates.mjs`, so there is exactly one rendering
 path and the CMS preview cannot drift from the real page.
@@ -42,6 +42,38 @@ To preview the project-page layout locally, serve the parent of `_site` with
 `_site` linked as `aiwc_website/`, or just visit
 `http://127.0.0.1:8913/aiwc_website/` after `npm run serve` from a directory
 arranged that way.
+
+## Header navigation
+
+The header lists a handful of entries, some opening a submenu. Its shape is
+`nav` in `content/site.json`:
+
+```jsonc
+"nav": [
+  { "page": "about", "children": ["aiwc5"] },
+  { "page": "work",  "children": ["research", "education", "training", "outreach"] },
+  { "page": "people" },
+  { "page": "contact", "button": true }   // drawn as the filled button
+]
+```
+
+The home page is never an entry — the logo links to it. `npm run verify`
+fails if a published page is missing from the header, so a new page needs a
+line here (or a rule in `placeUnlistedPages` in `src/registry.mjs` that
+places it automatically). The breadcrumb on a child page is derived from the
+same list.
+
+## Design rules
+
+- **One brand colour.** `--azure` (#2690FA) is the logo's blue and is only
+  ever decoration — it is 3.3:1 on white. Text and buttons use `--azure-ink`.
+- **No motion on load.** Nothing fades, slides or counts up as you scroll.
+  Movement only answers an action: a menu opening, a group expanding.
+- **One dark band per page** — the closing callout — plus the footer.
+- **Long pages are read top to bottom.** A page set to "tabs" in the CMS now
+  renders an "On this page" list of jump links; nothing is hidden.
+- **Preview builds** set `"noindex": true` in `content/site.json`, which adds
+  `<meta name="robots" content="noindex">` and a disallow-all `robots.txt`.
 
 ## Structure
 

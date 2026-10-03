@@ -1,5 +1,5 @@
 /**
- * Browser-only behaviour: motion, gallery, search, lightbox, menu.
+ * Browser-only behaviour: menu, directories, gallery, search, lightbox.
  *
  * Content and translation are baked in at build time (see hydrate.mjs), so
  * nothing here fetches copy or swaps languages — the language switcher is a
@@ -7,110 +7,11 @@
  * lookup below must tolerate its target being absent.
  */
 
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-/* ---------- motion ---------- */
-
-function setupMotion() {
-  document.body.classList.add('motion-ready');
-  // Story cards are excluded: their pointer-tilt writes inline transforms,
-  // and a transform transition would drag behind the pointer.
-  const motionItems = [
-    ...document.querySelectorAll(
-      '.project-card, .process-step, .media-card, .video-card, .people-card, .metric, ' +
-      '.pub-card, .tool-card, .portrait-card, .cms-block, .data-panel, .editorial-image, .photo-ribbon figure'
-    )
-  ];
-  motionItems.forEach((item, index) => {
-    item.classList.add('motion-item');
-    item.style.setProperty('--motion-delay', (index % 4) * 65 + 'ms');
-  });
-
-  if (reduceMotion || !('IntersectionObserver' in window)) {
-    motionItems.forEach((item) => item.classList.add('is-inview'));
-  } else {
-    const motionObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add('is-inview');
-          motionObserver.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.14, rootMargin: '0px 0px -5% 0px' }
-    );
-    motionItems.forEach((item) => motionObserver.observe(item));
-  }
-
-  // Big numbers count up the first time they scroll into view. The suffix
-  // split is what lets "10,000+" animate: the digits run 0→10,000 while the
-  // "+" stays put. Anything that does not lead with a digit is left alone.
-  const counters = [...document.querySelectorAll('.metric strong, .data-value, .image-data-overlay strong')];
-  const animateCounter = (node) => {
-    if (node.dataset.animated) return;
-    node.dataset.animated = 'true';
-    const match = node.textContent.trim().match(/^([\d][\d,]*)(.*)$/s);
-    if (!match || reduceMotion) return;
-    const end = Number(match[1].replace(/,/g, ''));
-    const suffix = match[2];
-    if (!Number.isFinite(end) || end === 0) return;
-    const started = performance.now();
-    const tick = (now) => {
-      const progress = Math.min((now - started) / 1100, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      node.textContent = Math.round(end * eased).toLocaleString() + suffix;
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  };
-  if (counters.length && !reduceMotion && 'IntersectionObserver' in window) {
-    const counterObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          animateCounter(entry.target);
-          counterObserver.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.4 }
-    );
-    counters.forEach((counter) => counterObserver.observe(counter));
-  }
-
-  if (!reduceMotion && window.matchMedia('(pointer: fine)').matches) {
-    document.querySelectorAll('.story-card').forEach((card) => {
-      card.addEventListener('pointermove', (event) => {
-        const bounds = card.getBoundingClientRect();
-        const x = (event.clientX - bounds.left) / bounds.width;
-        const y = (event.clientY - bounds.top) / bounds.height;
-        card.style.setProperty('--spot-x', (x * 100).toFixed(1) + '%');
-        card.style.setProperty('--spot-y', (y * 100).toFixed(1) + '%');
-        card.style.transform = `perspective(1000px) rotateX(${((0.5 - y) * 3.5).toFixed(2)}deg) rotateY(${((x - 0.5) * 4.5).toFixed(2)}deg) translateY(-4px)`;
-      });
-      card.addEventListener('pointerleave', () => {
-        card.style.transform = '';
-        card.style.removeProperty('--spot-x');
-        card.style.removeProperty('--spot-y');
-      });
-    });
-  }
-
-  const progressBar = document.getElementById('scroll-progress');
-  if (progressBar) {
-    let progressFrame = 0;
-    const updateProgress = () => {
-      progressFrame = 0;
-      const distance = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = distance > 0 ? Math.min(window.scrollY / distance, 1) : 0;
-      progressBar.style.transform = `scaleX(${progress})`;
-    };
-    window.addEventListener('scroll', () => {
-      if (!progressFrame) progressFrame = requestAnimationFrame(updateProgress);
-    }, { passive: true });
-    window.addEventListener('resize', updateProgress);
-    updateProgress();
-  }
-}
+/* ---------- motion ----------
+ * None. The redesign shows every block as soon as the page loads: no
+ * scroll-triggered entrances, no counting numbers, no card tilt and no
+ * progress bar. Movement is reserved for answering what the reader does
+ * (a menu opening, a group expanding). */
 
 /**
  * Apply the CMS text-size percentages.
@@ -128,12 +29,6 @@ function refreshTextScales() {
     node.style.fontSize = '';
     const baseline = Number.parseFloat(getComputedStyle(node).fontSize);
     if (Number.isFinite(baseline)) node.style.fontSize = (baseline * percentage) / 100 + 'px';
-  });
-}
-
-function showReveals(root) {
-  root.querySelectorAll('.reveal').forEach((element, index) => {
-    window.setTimeout(() => element.classList.add('is-visible'), Math.min(index * 90, 420) + 60);
   });
 }
 
@@ -436,7 +331,12 @@ function setupSectionNav() {
   const body = panel.querySelector('.section-body') || panel;
   const banners = [...body.querySelectorAll(':scope > [data-section-anchor]')];
   if (banners.length < 2) return;
-  const mode = panel.getAttribute('data-section-nav');
+  // "tabs" hid every section but one behind a sticky bar, which is most of
+  // what made long pages feel crowded. It now renders as jump links: the
+  // whole page stays readable top to bottom, and the bar is just a contents
+  // list. "collapse" is unchanged — it is an explicit editorial choice.
+  const raw = panel.getAttribute('data-section-nav');
+  const mode = raw === 'tabs' ? 'jump' : raw;
 
   // A section runs until the next banner — or until the trailing
   // .cms-sections wrapper, which holds page-level blocks (the closing
@@ -627,11 +527,47 @@ function setupSectionNav() {
 
 function setupMenu() {
   const menuButton = document.querySelector('.menu-toggle');
-  if (!menuButton) return;
-  menuButton.addEventListener('click', () => {
-    const open = document.body.classList.toggle('menu-open');
-    menuButton.setAttribute('aria-expanded', String(open));
-    menuButton.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+  if (menuButton) {
+    menuButton.addEventListener('click', () => {
+      const open = document.body.classList.toggle('menu-open');
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.querySelector('.menu-toggle-text').textContent = open ? 'Close' : 'Menu';
+    });
+  }
+
+  // Submenus open on hover for a mouse (CSS) and on the chevron button for
+  // touch and keyboard. Only one is open at a time.
+  const items = [...document.querySelectorAll('.nav-item.has-menu')];
+  const close = (except) => items.forEach((item) => {
+    if (item === except) return;
+    item.classList.remove('is-open');
+    item.querySelector('.nav-more')?.setAttribute('aria-expanded', 'false');
+  });
+  items.forEach((item) => {
+    const more = item.querySelector('.nav-more');
+    more?.addEventListener('click', () => {
+      const open = !item.classList.contains('is-open');
+      close(item);
+      item.classList.toggle('is-open', open);
+      more.setAttribute('aria-expanded', String(open));
+    });
+    item.addEventListener('focusout', (event) => {
+      if (!item.contains(event.relatedTarget)) close();
+    });
+  });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.nav-item.has-menu')) close();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    const open = items.find((item) => item.classList.contains('is-open'));
+    if (open) {
+      close();
+      open.querySelector('.nav-more')?.focus();
+    } else if (document.body.classList.contains('menu-open')) {
+      menuButton?.click();
+      menuButton?.focus();
+    }
   });
 }
 
@@ -656,7 +592,7 @@ function setupLanguageSwitcher() {
 function redirectLegacyHash() {
   const hash = location.hash.slice(1);
   if (!hash) return false;
-  const link = document.querySelector('.nav-tab[data-tab="' + CSS.escape(hash) + '"]');
+  const link = document.querySelector('[data-site-nav] a[data-tab="' + CSS.escape(hash) + '"]');
   const href = link && link.getAttribute('href');
   if (!href || href === location.pathname) return false;
   location.replace(href);
@@ -675,14 +611,12 @@ if (!redirectLegacyHash()) {
   });
   setupDisclosureGroups();
   setupSectionNav();
-  setupMotion();
   setupMenu();
   setupLanguageSwitcher();
   setupMediaSearch();
   setupArchive();
   setupPublications();
   setupLightbox();
-  showReveals(document);
 }
 
 /* ── directories: shuffle, sort, and a one-row preview ────────────────

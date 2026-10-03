@@ -94,6 +94,56 @@ export function navTree(pages) {
   return out;
 }
 
+/**
+ * The header menu: a few top-level entries, some of which open a submenu.
+ *
+ * Its shape is written down in content/site.json `nav` rather than derived
+ * from page order, because the whole point of the header is to be short —
+ * fifteen pages flattened into one row is the rail this replaced. Each entry
+ * is `{ page, children?: [slug…], button?: true }`. The home page is never an
+ * entry; the logo is its link.
+ *
+ * Returns `[{ page, children: [page…], button }]`.
+ */
+export function buildNav(pages, navConfig = []) {
+  const bySlug = new Map(pages.map((p) => [p.slug, p]));
+  const placed = new Set(pages[0] ? [pages[0].slug] : []);
+  const nav = [];
+  for (const entry of navConfig) {
+    const page = bySlug.get(entry.page);
+    if (!page || placed.has(page.slug)) continue;
+    placed.add(page.slug);
+    const children = (entry.children || [])
+      .map((slug) => bySlug.get(slug))
+      .filter((child) => child && !placed.has(child.slug));
+    children.forEach((child) => placed.add(child.slug));
+    nav.push({ page, children, button: entry.button === true });
+  }
+  const unlisted = pages.filter((p) => !placed.has(p.slug));
+  return unlisted.length ? placeUnlistedPages(nav, unlisted) : nav;
+}
+
+/**
+ * Where a page goes when site.json `nav` does not mention it — typically a
+ * page an editor has just created in the CMS.
+ *
+ * This matters more than it looks: `npm run verify` fails the build when a
+ * published page is missing from the header, and a failed build freezes the
+ * whole site (see the README). So "do nothing" is a choice too — a loud one.
+ *
+ * nav      — the entries built from site.json, in order (mutate or return new)
+ * unlisted — published pages not yet placed, in `order` order
+ * returns  — the final nav array
+ */
+export function placeUnlistedPages(nav, unlisted) {
+  // TODO: decide where unlisted pages appear. See the note in the chat.
+  return nav;
+}
+
+/** The nav entry a page sits under, or null for top-level pages and home. */
+export const navParentOf = (nav, slug) =>
+  nav.find((entry) => entry.children.some((child) => child.slug === slug))?.page || null;
+
 /** URL path for a page in a language. The first page owns the root. */
 export const urlFor = (lang, page, pages, base = '') => {
   const home = pages ? pages[0] : null;
