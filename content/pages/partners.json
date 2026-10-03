@@ -33,6 +33,11 @@
   },
   "blocks": [
     {
+      "type": "banner",
+      "title": "Who is in the room.",
+      "lede": "Universities, national institutes, government departments and water businesses — eleven partners in Australia, twenty-two in India."
+    },
+    {
       "type": "partnerDirectory",
       "items": [
         {

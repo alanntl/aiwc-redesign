@@ -18,7 +18,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseHTML } from 'linkedom';
 import { renderPage, renderPerson, renderPartner, brandMarkSvg, BRAND_SHAPES } from '../src/templates.mjs';
-import { buildRegistry, buildNav, loadCollections, loadSite, navParentOf, urlFor, urlForEntry } from '../src/registry.mjs';
+import { buildRegistry, buildNav, loadCollections, loadNavConfig, loadSite, navParentOf, urlFor, urlForEntry } from '../src/registry.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, '_site');
@@ -37,8 +37,6 @@ const LANGS = SITE.languages;
 
 const template = readFileSync(join(ROOT, 'index.html'), 'utf8');
 const PAGES = buildRegistry(ROOT);
-// The header menu, grouped as content/site.json `nav` says (see buildNav).
-const NAV = buildNav(PAGES, SITE.nav);
 const { people, partners } = loadCollections(ROOT);
 /* ── counts that appear in prose ─────────────────────────────────────────
  *
@@ -74,6 +72,8 @@ const COUNTS = {
   researchers: people.length,
   partnerInstitutions: partners.length,
   researcherInstitutions: new Set(people.map((p) => p.institute).filter(Boolean)).size,
+  researchersInAustralia: people.filter((p) => p.country === 'Australia').length,
+  researchersInIndia: people.filter((p) => p.country === 'India').length,
 };
 
 /* Each count offers three forms: digits, words, and words for the start of a
@@ -117,6 +117,8 @@ if (unknownTokens.size) {
 
 // Built after substitution, or the lookup would hand back the unfilled copies.
 const pageById = new Map(PAGES.map((p) => [p.slug, p]));
+// The header menu, as editors set it in the CMS (content/navigation.json).
+const NAV = buildNav(PAGES, loadNavConfig(ROOT, SITE));
 
 
 const href = (lang, page) => urlFor(lang, page, PAGES, BASE);
@@ -161,47 +163,55 @@ function composeDocument(lang, activeSlug, panel, { langBase = '' } = {}) {
   // Only external scripts are stripped — behaviour ships as /assets/app.mjs.
   document.querySelectorAll('script[src]').forEach((n) => n.remove());
 
-  /* header navigation, from site.json `nav` */
+  /* header navigation, from the CMS Header menu (content/navigation.json) */
   const CHEVRON = '<svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2 4.5 6 8.5 10 4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
-  const navLink = (page, className) => {
+  const itemLink = (item, className) => {
     const a = document.createElement('a');
     if (className) a.className = className;
-    a.setAttribute('href', href(lang, page));
-    a.setAttribute('data-tab', page.slug);
-    if (page.slug === activeSlug) a.setAttribute('aria-current', 'page');
-    a.textContent = page.menuName;
+    if (item.url) {
+      a.setAttribute('href', item.url);
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener');
+      a.setAttribute('data-external', '');
+    } else {
+      a.setAttribute('href', href(lang, item.page) + (item.section ? '#' + item.section : ''));
+      a.setAttribute('data-tab', item.page.slug);
+      if (item.page.slug === activeSlug && !item.section) a.setAttribute('aria-current', 'page');
+    }
+    a.textContent = item.label;
     return a;
   };
-  for (const list of document.querySelectorAll('[data-site-nav]')) {
+  // The highlighted tab sits in the brand row on wide screens and at the foot
+  // of the menu on phones, so it is drawn into both lists; the main bar
+  // carries every other tab.
+  const lists = [
+    ...[...document.querySelectorAll('[data-site-actions]')].map((list) => ({ list, filter: (tab) => tab.button, suffix: '' })),
+    ...[...document.querySelectorAll('[data-site-nav]')].map((list) => ({ list, filter: () => true, suffix: '-m' })),
+  ];
+  for (const { list, filter, suffix } of lists) {
     list.textContent = '';
-    NAV.forEach(({ page, children, button }) => {
+    NAV.filter(filter).forEach((tab) => {
       const li = document.createElement('li');
-      if (button) {
-        li.className = 'nav-item nav-item--cta';
-        li.appendChild(navLink(page, 'nav-cta'));
-        list.appendChild(li);
-        return;
-      }
-      const current = page.slug === activeSlug || children.some((c) => c.slug === activeSlug);
-      li.className = 'nav-item' + (children.length ? ' has-menu' : '') + (current ? ' is-current' : '');
-      li.appendChild(navLink(page, 'nav-link'));
-      if (children.length) {
-        const menuId = 'menu-' + page.slug;
+      const current = tab.page.slug === activeSlug || tab.items.some((i) => i.page?.slug === activeSlug);
+      li.className = 'nav-item' + (tab.button ? ' nav-item--cta' : '') + (tab.items.length ? ' has-menu' : '') + (current ? ' is-current' : '');
+      li.appendChild(itemLink({ label: tab.label, page: tab.page }, tab.button ? 'nav-cta' : 'nav-link'));
+      if (tab.items.length) {
+        const menuId = 'menu-' + tab.page.slug + (tab.button ? suffix : '');
         const more = document.createElement('button');
         more.className = 'nav-more';
         more.setAttribute('type', 'button');
         more.setAttribute('aria-expanded', 'false');
         more.setAttribute('aria-controls', menuId);
-        more.setAttribute('aria-label', 'More in ' + page.menuName);
+        more.setAttribute('aria-label', 'More in ' + tab.label);
         more.innerHTML = CHEVRON;
         li.appendChild(more);
         const menu = document.createElement('ul');
         menu.className = 'nav-menu';
         menu.id = menuId;
-        children.forEach((child) => {
-          const item = document.createElement('li');
-          item.appendChild(navLink(child));
-          menu.appendChild(item);
+        tab.items.forEach((item) => {
+          const entry = document.createElement('li');
+          entry.appendChild(itemLink(item));
+          menu.appendChild(entry);
         });
         li.appendChild(menu);
       }
@@ -243,17 +253,19 @@ function composeDocument(lang, activeSlug, panel, { langBase = '' } = {}) {
   const footerNav = document.querySelector('[data-footer-nav]');
   if (footerNav) {
     footerNav.textContent = '';
-    for (const { page } of NAV) {
+    for (const { page, label } of NAV) {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.setAttribute('href', href(lang, page));
-      a.textContent = page.menuName;
+      a.textContent = label;
       li.appendChild(a);
       footerNav.appendChild(li);
     }
   }
 
   document.getElementById('content').appendChild(panel);
+  // app.mjs needs the base path to fetch the search index.
+  document.body.setAttribute('data-base', BASE);
 
   const app = document.createElement('script');
   app.setAttribute('type', 'module');
@@ -535,6 +547,33 @@ write('assets/shapes.json', JSON.stringify(shapes));
 // Blocks like peopleGrid and logoWall render from the whole collection, which
 // the CMS does not hand to a preview — it only has the entry being edited.
 // Publishing a trimmed index lets the preview draw them for real.
+/* ── the search index ──────────────────────────────────────────────────
+   One small JSON file the header search reads on first use: every page and
+   its section headings, every researcher, partner and publication. */
+const sectionId = (title) =>
+  's-' + String(title || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+const searchEntries = [];
+const plain = (v) => String(v || '').replace(/\s+/g, ' ').trim();
+for (const page of PAGES) {
+  const url = href('en', page);
+  searchEntries.push({ k: 'Page', t: plain(page.intro?.title) || page.menuName, u: url, x: plain(page.intro?.lede).slice(0, 180) });
+  (page.blocks || []).forEach((b) => {
+    if (b.type === 'banner' && plain(b.title) && plain(b.title) !== '.') {
+      searchEntries.push({ k: page.menuName, t: plain(b.title), u: url + '#' + sectionId(b.title), x: plain(b.lede || b.eyebrow).slice(0, 160) });
+    }
+    if (b.type === 'publicationList') {
+      (b.items || []).forEach((item) => searchEntries.push({ k: 'Publication', t: plain(item.title).slice(0, 200), u: url, x: plain(item.meta) }));
+    }
+  });
+}
+for (const p of people) {
+  searchEntries.push({ k: 'Researcher', t: p.name, u: entryHref('en', 'people', p.slug), x: [p.designation, p.institute].filter(Boolean).join(', '), s: plain(p.interests).slice(0, 240) });
+}
+for (const p of partners) {
+  searchEntries.push({ k: 'Partner institution', t: p.name, u: entryHref('en', 'partners', p.slug), x: p.country || '' });
+}
+write('assets/search.json', JSON.stringify(searchEntries));
+
 write(
   'assets/collections.json',
   JSON.stringify({

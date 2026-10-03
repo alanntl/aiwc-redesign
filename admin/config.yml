@@ -307,7 +307,7 @@ collections:
                 widget: "select"
                 required: false
                 default: ""
-                options: [{ label: "White", value: "" }, { label: "Pale blue", value: "sky" }, { label: "Deep blue", value: "deep" }]
+                options: [{ label: "White", value: "" }, { label: "Pale blue", value: "sky" }, { label: "Deep blue", value: "deep" }, { label: "Warm sand", value: "sand" }]
                 hint: "Colours this heading and everything below it, up to the next heading. Consecutive headings with the same background share one band. Use deep blue once per page at most."
               - { label: "i18n", name: "i18n", widget: "hidden", required: false }
           - label: "Statement with numbers"
@@ -315,7 +315,7 @@ collections:
             widget: "object"
             fields:
               - { label: "Small label", name: "label", widget: "string", required: false }
-              - { label: "Statement", name: "quote", widget: "text" }
+              - { label: "Statement", name: "quote", widget: "text", required: false, hint: "Optional. Leave empty (with no label) to show just the numbers under the section heading above." }
               - label: "Numbers"
                 name: "metrics"
                 widget: "list"
@@ -329,7 +329,7 @@ collections:
             widget: "object"
             fields:
               - { label: "Small label", name: "eyebrow", widget: "string", required: false }
-              - { label: "Heading", name: "title", widget: "string" }
+              - { label: "Heading", name: "title", widget: "string", required: false, hint: "Leave empty when a section heading just above already introduces these cards — they then join that heading's background." }
               - { label: "Text", name: "lede", widget: "text", required: false }
               - label: "Background"
                 name: "tone"
@@ -337,6 +337,13 @@ collections:
                 required: false
                 default: ""
                 options: [{ label: "White", value: "" }, { label: "Pale blue band", value: "sky" }]
+              - label: "Card style"
+                name: "look"
+                widget: "select"
+                required: false
+                default: ""
+                options: [{ label: "Photo cards", value: "" }, { label: "Icon cards", value: "icons" }]
+                hint: "Icon cards show each card's icon instead of its photo."
               - label: "Cards"
                 name: "items"
                 widget: "list"
@@ -356,6 +363,14 @@ collections:
                   - { label: "Small label", name: "label", widget: "string", required: false }
                   - { label: "Title", name: "title", widget: "string" }
                   - { label: "Short description", name: "text", widget: "text", required: false }
+                  - label: "Icon"
+                    name: "icon"
+                    widget: "select"
+                    required: false
+                    options: ["research", "education", "training", "outreach", "collaborate", "partner", "people", "water", "event", "publication", "story"]
+                    hint: "Shown when the block's card style is Icon cards."
+                  - { label: "Jump to a section of that page", name: "section", widget: "string", required: false, hint: "Optional, e.g. s-the-2030-agenda-set-by-the-partners" }
+                  - { label: "Or open an outside website", name: "url", widget: "string", required: false, hint: "Optional. Used instead of the page when filled in." }
                   - { label: "Photo", name: "photo", widget: "object", collapsed: true, fields: *photoFields }
               - { label: "i18n", name: "i18n", widget: "hidden", required: false }
           - label: "Numbered steps"
@@ -614,7 +629,7 @@ collections:
   - name: "site"
     label: "Logo & site settings"
     icon: "palette"
-    description: "The logo shown in the menu, the mobile bar and the browser tab."
+    description: "The logo, and the header menu — its tabs and their dropdowns."
     files:
       - name: "brand"
         label: "Logo"
@@ -635,3 +650,42 @@ collections:
             widget: "image"
             required: false
             hint: "Optional. Upload your own logo to use instead of the drawn mark, in the menu, the mobile bar and the browser tab. A square PNG or SVG with a transparent background works best — it sits on the dark menu. Remove it to go back to the drawn mark."
+      # The header menu. A page that is not listed here still appears — it
+      # joins the first tab's dropdown (or its parent's), so a new page can
+      # never become unreachable or stop the site publishing.
+      - name: "navigation"
+        label: "Header menu"
+        file: "content/navigation.json"
+        fields:
+          - label: "Tabs"
+            name: "tabs"
+            widget: "list"
+            summary: "{{fields.label}}"
+            hint: "The menu across the top of every page, left to right. Keep it to about seven tabs."
+            fields:
+              - { label: "Tab label", name: "label", widget: "string" }
+              - label: "Tab opens page"
+                name: "page"
+                widget: "relation"
+                collection: "pages"
+                value_field: "slug"
+                display_fields: ["menuName"]
+                search_fields: ["menuName", "slug"]
+              - { label: "Show as the highlighted button", name: "button", widget: "boolean", default: false, required: false, hint: "Use for one tab only — Collaborate with us." }
+              - label: "Dropdown items"
+                name: "items"
+                widget: "list"
+                required: false
+                summary: "{{fields.label}}"
+                fields:
+                  - { label: "Label", name: "label", widget: "string" }
+                  - label: "Opens page"
+                    name: "page"
+                    widget: "relation"
+                    collection: "pages"
+                    value_field: "slug"
+                    display_fields: ["menuName"]
+                    search_fields: ["menuName", "slug"]
+                    required: false
+                  - { label: "Jump to a section of that page", name: "section", widget: "string", required: false, hint: "Optional. The section's address: s- followed by its heading in lower case with dashes, e.g. s-how-the-centre-is-run. The build warns if it does not exist." }
+                  - { label: "Or open an outside website", name: "url", widget: "string", required: false, hint: "Optional, e.g. https://www.marvi.org.in/. Used instead of the page when filled in." }

@@ -325,10 +325,16 @@ const BLOCKS = {
 
   statement(document, block, ctx) {
     const wrap = el(document, 'div', { class: 'home-statement' });
-    const grid = el(document, 'div', { class: 'statement-grid' });
-    grid.appendChild(el(document, 'p', { class: 'meta', text: block.label, key: ctx.t('label') }));
-    grid.appendChild(el(document, 'blockquote', { text: block.quote, key: ctx.t('quote') }));
-    wrap.appendChild(grid);
+    // With no label and no quote the block is just its figures — the heading
+    // above it already says what they are.
+    if ((block.label || '').trim() || (block.quote || '').trim()) {
+      const grid = el(document, 'div', { class: 'statement-grid' });
+      grid.appendChild(el(document, 'p', { class: 'meta', text: block.label, key: ctx.t('label') }));
+      grid.appendChild(el(document, 'blockquote', { text: block.quote, key: ctx.t('quote') }));
+      wrap.appendChild(grid);
+    } else {
+      wrap.classList.add('home-statement--figures');
+    }
     // Two of these blocks carry a quote and no numbers, and were drawing the
     // metric row anyway — a tall empty band under the quote. With nothing to
     // put in it the block is simply a pull-quote.
@@ -374,13 +380,33 @@ const BLOCKS = {
     headText.appendChild(h2);
     head.appendChild(headText);
     head.appendChild(el(document, 'p', { text: block.lede, key: ctx.t('lede') }));
-    section.appendChild(head);
-    const grid = el(document, 'div', { class: 'story-grid' });
+    if ((block.eyebrow || '').trim() || (block.title || '').trim() || (block.lede || '').trim()) section.appendChild(head);
+    const icons = block.look === 'icons';
+    const grid = el(document, 'div', { class: 'story-grid' + (icons ? ' story-grid--icons' : '') });
     (block.items || []).forEach((item, i) => {
-      const card = el(document, 'a', { class: 'story-card' });
-      card.setAttribute('data-open', item.page);
-      card.setAttribute('href', ctx.urlFor(item.page));
-      card.appendChild(photo(document, item.photo));
+      const card = el(document, 'a', { class: 'story-card' + (icons ? ' story-card--icon' : '') });
+      // An outside address wins over the page; a section is appended to it.
+      const external = typeof item.url === 'string' && /^https?:\/\//.test(item.url.trim());
+      if (external) {
+        card.setAttribute('href', item.url.trim());
+        card.setAttribute('target', '_blank');
+        card.setAttribute('rel', 'noopener');
+      } else {
+        card.setAttribute('data-open', item.page);
+        card.setAttribute('href', ctx.urlFor(item.page) + (item.section ? '#' + String(item.section).replace(/^#/, '') : ''));
+      }
+      if (icons) {
+        card.insertAdjacentHTML('beforeend', iconSvg(item.icon));
+      } else if (item.photo?.image) {
+        card.appendChild(photo(document, item.photo));
+      } else {
+        // No photo (a publication, say): a quiet tinted panel carrying the
+        // card's icon, so the row keeps its rhythm without a broken image.
+        const blank = el(document, 'span', { class: 'story-blank' });
+        blank.setAttribute('aria-hidden', 'true');
+        blank.innerHTML = iconSvg(item.icon || 'publication');
+        card.appendChild(blank);
+      }
       const copy = el(document, 'span', { class: 'story-copy' });
       // A bare sequence number ("01") is not a label anyone reads; only a
       // word label (a category, a date) is shown above the title.
@@ -1004,6 +1030,27 @@ const pubYear = (item) => {
   return found ? Math.max(...found.map(Number)) : 0;
 };
 
+/**
+ * Line icons for icon cards, drawn on a 32px grid with a 1.75 stroke so
+ * they sit with the type rather than shouting over it. Unknown names fall
+ * back to the water drop.
+ */
+const ICONS = {
+  research: '<path d="M16 4a8 8 0 0 0-4.8 14.4c.8.6 1.3 1.5 1.3 2.5V22h7v-1.1c0-1 .5-1.9 1.3-2.5A8 8 0 0 0 16 4Z"/><path d="M12.5 26h7M14 29h4"/>',
+  education: '<path d="M3 12 16 6l13 6-13 6-13-6Z"/><path d="M8 14.5V21c0 2 3.6 4 8 4s8-2 8-4v-6.5M29 12v8"/>',
+  training: '<circle cx="16" cy="9" r="3.5"/><circle cx="7" cy="12" r="2.8"/><circle cx="25" cy="12" r="2.8"/><path d="M9.5 26v-3.5a6.5 6.5 0 0 1 13 0V26M2.5 25v-2.3a4.5 4.5 0 0 1 6-4.2M29.5 25v-2.3a4.5 4.5 0 0 0-6-4.2"/>',
+  outreach: '<path d="M5 13v6h4l9 6V7L9 13H5Z"/><path d="M22 11.5a6 6 0 0 1 0 9M25.5 8a11 11 0 0 1 0 16"/>',
+  collaborate: '<path d="m3 15 6-6 5 2 4-2 5 1 6 5"/><path d="m9 9-6 6 9 9c1 1 2.5 1 3.5 0L17 22.5M23 12l6 3-9.5 9.5c-1 1-2.5 1-3.5 0"/><path d="m12 18 3 3M15 15l4 4"/>',
+  partner: '<circle cx="16" cy="6" r="3"/><circle cx="6" cy="25" r="3"/><circle cx="26" cy="25" r="3"/><path d="m14.5 8.6-7 13.8M17.5 8.6l7 13.8M9 25h14"/>',
+  people: '<circle cx="12" cy="10" r="4"/><path d="M4 27v-3a8 8 0 0 1 16 0v3"/><circle cx="23" cy="11" r="3"/><path d="M22 18.2a6 6 0 0 1 7 5.8v3"/>',
+  water: '<path d="M16 3.5S7 14 7 20a9 9 0 0 0 18 0c0-6-9-16.5-9-16.5Z"/><path d="M11.5 20.5a4.5 4.5 0 0 0 4.5 4.5"/>',
+  event: '<rect x="4" y="7" width="24" height="21" rx="2"/><path d="M4 13h24M10 4v6M22 4v6M9.5 18h3M14.5 18h3M19.5 18h3M9.5 23h3M14.5 23h3"/>',
+  publication: '<path d="M8 3.5h11l6 6V28a.5.5 0 0 1-.5.5h-16A.5.5 0 0 1 8 28V3.5Z"/><path d="M19 3.5v6h6M12 15h9M12 19.5h9M12 24h6"/>',
+  story: '<path d="M5 6h15v20H8a3 3 0 0 1-3-3V6Z"/><path d="M20 11h6v12a3 3 0 0 1-6 0V11ZM9 11h7M9 15h7M9 19h4"/>',
+};
+const iconSvg = (name) =>
+  `<span class="story-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ICONS.water}</svg></span>`;
+
 /** "02 — Why a joint centre" → "Why a joint centre". */
 const unnumbered = (value) => String(value || '').replace(/^\s*\d{1,2}\s+[—–-]\s+/, '');
 
@@ -1037,10 +1084,12 @@ const partnerShowcase = (document, groups, ctx, { limited, total }) => {
   });
   wrap.appendChild(grid);
   if (ctx.urlFor) {
-    const more = el(document, 'p', { class: 'partner-showcase-more' });
-    const a = el(document, 'a', { class: 'button', text: limited ? `See all ${total} partners` : 'About our partners' });
-    a.href = ctx.urlFor('partners');
-    more.appendChild(a);
+    const more = el(document, 'p', { class: 'partner-showcase-more hero-actions' });
+    const expert = el(document, 'a', { class: 'button', text: 'Find an expert' });
+    expert.href = ctx.urlFor('people');
+    const all = el(document, 'a', { class: 'button primary', text: limited ? `View all ${total} partners` : 'View all partners' });
+    all.href = ctx.urlFor('partners');
+    more.append(expert, all);
     wrap.appendChild(more);
   }
   return wrap;
@@ -1304,19 +1353,22 @@ const homeHero = (document, page, ctx) => {
 };
 
 /**
- * Background bands. A section heading (banner) can carry a tone — "sky" or
- * "deep" — which colours that heading and every block after it, up to the
- * next heading. Consecutive headings with the same tone share one band, so
+ * Background bands. A section heading (banner) can carry a tone — "sky",
+ * "deep" or "sand" — which colours that heading and every block after it, up
+ * to the next heading (or the next titled card section). Consecutive headings with the same tone share one band, so
  * "Who we are" and the timeline below it read as a single deep-blue stretch.
  *
  * Bands are plain wrappers; untoned blocks stay direct children of the
  * section body exactly as before.
  */
-const BAND_TONES = new Set(['sky', 'deep']);
+const BAND_TONES = new Set(['sky', 'deep', 'sand']);
 const toneBands = (document, items) => {
   const out = [];
   let band = null;
   items.forEach(({ node, block }) => {
+    // A titled card section is a section of its own, so it closes any band
+    // above it; an untitled one belongs to the heading before it.
+    if (block.type === 'storyCards' && (block.title || '').trim()) band = null;
     if (block.type === 'banner') {
       const tone = BAND_TONES.has(block.tone) ? block.tone : '';
       if (!tone) band = null;

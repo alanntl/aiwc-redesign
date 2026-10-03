@@ -55,6 +55,8 @@ itself in public. Write a token instead and the build fills in the real figure:
 | `{{researchers}}` | 108 | researchers on the site |
 | `{{researcherInstitutions}}` | 27 | institutions those researchers belong to |
 | `{{partnerInstitutions}}` | 33 | partner institutions |
+| `{{researchersInAustralia}}` | 49 | researchers based in Australia |
+| `{{researchersInIndia}}` | 59 | researchers based in India |
 
 Each also has `…InWords` ("one hundred and eight") and `…InWords` capitalised
 for the start of a sentence — `{{ResearchersInWords}}`.

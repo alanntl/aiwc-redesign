@@ -573,6 +573,94 @@ function setupMenu() {
   });
 }
 
+/* ---------- site search ----------
+ * The header's search button opens a panel over the page. The index
+ * (assets/search.json: pages, sections, researchers, partners and
+ * publications) is fetched the first time it opens, then every keystroke is a
+ * local filter: all words must match, and title matches rank first. */
+function setupSearch() {
+  const panel = document.getElementById('search-panel');
+  const toggle = document.querySelector('.search-toggle');
+  if (!panel || !toggle) return;
+  const input = panel.querySelector('#site-search');
+  const results = panel.querySelector('#search-results');
+  const base = document.body.dataset.base || '';
+  let index = null;
+  let lastFocus = null;
+
+  const load = async () => {
+    if (index) return index;
+    try {
+      const res = await fetch(base + '/assets/search.json');
+      index = (await res.json()).map((e) => ({ ...e, hay: [e.t, e.x, e.s, e.k].filter(Boolean).join(' ').toLowerCase(), title: e.t.toLowerCase() }));
+    } catch {
+      index = [];
+    }
+    return index;
+  };
+
+  const hint = (text) => {
+    results.textContent = '';
+    const li = document.createElement('li');
+    li.className = 'search-hint';
+    li.textContent = text;
+    results.appendChild(li);
+  };
+
+  const run = async () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 2) return hint('Type at least two letters — a topic, a researcher, an institution or a paper.');
+    const words = q.split(/\s+/);
+    const found = (await load())
+      .filter((e) => words.every((w) => e.hay.includes(w)))
+      .map((e) => ({ e, score: (e.title.startsWith(q) ? 3 : 0) + words.filter((w) => e.title.includes(w)).length }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 30);
+    if (!found.length) return hint(`Nothing matches “${input.value.trim()}”. Try fewer or shorter words.`);
+    results.textContent = '';
+    for (const { e } of found) {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = e.u;
+      for (const [cls, text] of [['k', e.k], ['t', e.t], ['x', e.x]]) {
+        if (!text) continue;
+        const span = document.createElement('span');
+        span.className = cls;
+        span.textContent = text;
+        a.appendChild(span);
+      }
+      li.appendChild(a);
+      results.appendChild(li);
+    }
+  };
+
+  const open = () => {
+    lastFocus = document.activeElement;
+    panel.hidden = false;
+    document.body.style.overflow = 'hidden';
+    input.focus();
+    run();
+  };
+  const close = () => {
+    panel.hidden = true;
+    document.body.style.overflow = '';
+    lastFocus?.focus();
+  };
+
+  toggle.addEventListener('click', open);
+  panel.querySelector('.search-close').addEventListener('click', close);
+  panel.addEventListener('click', (event) => { if (event.target === panel) close(); });
+  input.addEventListener('input', run);
+  // A result that only jumps within the current page leaves the panel open
+  // over it; close on any click on a result.
+  results.addEventListener('click', (event) => { if (event.target.closest('a')) close(); });
+  document.addEventListener('keydown', (event) => {
+    if (!panel.hidden && event.key === 'Escape') { event.preventDefault(); close(); }
+    const typing = /^(input|textarea|select)$/i.test(event.target.tagName || '') || event.target.isContentEditable;
+    if (panel.hidden && event.key === '/' && !typing) { event.preventDefault(); open(); }
+  });
+}
+
 // Each language is its own URL, so switching is a navigation rather than a
 // re-render. data-lang-base is written by the build as the current page's
 // path within its language, so the choice lands on the same page.
@@ -614,6 +702,7 @@ if (!redirectLegacyHash()) {
   setupDisclosureGroups();
   setupSectionNav();
   setupMenu();
+  setupSearch();
   setupLanguageSwitcher();
   setupMediaSearch();
   setupArchive();
