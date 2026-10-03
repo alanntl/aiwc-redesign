@@ -3,13 +3,13 @@
   "fullName": "Australia India Water Centre",
   "tagline": "A partnership for sustainable water futures",
   "description": "The Australia India Water Centre — a partnership of {{partnerInstitutions}} institutions and {{researchers}} researchers across Australia and India, working on research, education, training and outreach for sustainable water futures.",
-  "url": "https://aiwc.org.au",
-  "base": "/aiwc_website",
+  "url": "https://alanntl.github.io",
+  "base": "/aiwc-redesign",
   "languages": [
     "en"
   ],
   "cms": {
-    "repo": "AIWC2020/aiwc_website",
+    "repo": "alanntl/aiwc-redesign",
     "branch": "main",
     "authUrl": null
   },
@@ -52,5 +52,6 @@
       "page": "contact",
       "button": true
     }
-  ]
+  ],
+  "noindex": true
 }

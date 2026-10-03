@@ -1,5 +1,16 @@
 # AIWC — Australia India Water Centre
 
+> **This repository is a preview of the AIWC website redesign.** It is not
+> the live site. Preview: <https://alanntl.github.io/aiwc-redesign/>
+> (marked `noindex`, so search engines skip it).
+>
+> The redesign is one commit on top of the live repository's full history
+> (`AIWC2020/aiwc_website`). The commit after it only configures this
+> preview — the test base path, this repo for the CMS, `noindex`, and no
+> `CNAME` so the copy can never claim `aiwc.org.au`. To put the redesign
+> live, apply the redesign commit alone to `AIWC2020/aiwc_website` and leave
+> the preview commit behind.
+
 | | |
 |---|---|
 | **Website** | <https://aiwc2020.github.io/aiwc_website/> |
