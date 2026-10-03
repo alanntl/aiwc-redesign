@@ -13,6 +13,5 @@
     "branch": "main",
     "authUrl": null
   },
-  "noindex": true,
-  "designPreview": true
+  "noindex": true
 }
