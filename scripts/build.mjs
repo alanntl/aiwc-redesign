@@ -275,7 +275,7 @@ function composeDocument(lang, activeSlug, panel, { langBase = '' } = {}) {
     const head = document.querySelector('head');
     const pick = document.createElement('script');
     pick.textContent =
-      "try{var D=['lagoon','saffron','ocean','sunrise','indigo','eucalyptus','plum','ivory','terracotta','midnight'],q=new URLSearchParams(location.search).get('design')," +
+      "try{var D=['lagoon','saffron','ocean','sunrise','indigo','eucalyptus','plum','ivory','terracotta','midnight','aurora','waves','monsoon','contour','flow','marigold','deepsea','blueprint'],q=new URLSearchParams(location.search).get('design')," +
       "d=q||localStorage.getItem('aiwc-design');if(q)localStorage.setItem('aiwc-design',q);" +
       "if(D.indexOf(d)>-1)document.documentElement.setAttribute('data-design',d);}catch(e){}";
     head.insertBefore(pick, head.firstChild);

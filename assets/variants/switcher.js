@@ -16,6 +16,16 @@ const GROUPS = [
     ['sunrise', 'Sunrise — violet to amber'],
     ['indigo', 'Indigo & marigold — lattice'],
   ]],
+  ['Bold — coloured top bar, drawn or animated', [
+    ['aurora', 'Aurora — drifting colour'],
+    ['waves', 'Waves — sliding water'],
+    ['monsoon', 'Monsoon — falling rain'],
+    ['contour', 'Contour — drifting topography'],
+    ['flow', 'Flow — river lines drawing'],
+    ['marigold', 'Marigold bold — halftone dots'],
+    ['deepsea', 'Deep sea — rising light'],
+    ['blueprint', 'Blueprint — drafting grid'],
+  ]],
   ['More elegant', [
     ['eucalyptus', 'Eucalyptus — sage and clay'],
     ['plum', 'Plum & gold'],
@@ -25,7 +35,7 @@ const GROUPS = [
   ]],
 ];
 const ALL = GROUPS.flatMap(([, list]) => list);
-const DARK_HEADER = new Set(['midnight', 'indigo']);
+const DARK_HEADER = new Set(['midnight', 'indigo', 'aurora', 'waves', 'monsoon', 'contour', 'flow', 'deepsea', 'blueprint']);
 const root = document.documentElement;
 
 const remember = (value) => {

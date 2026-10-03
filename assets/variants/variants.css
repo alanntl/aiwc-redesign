@@ -222,6 +222,219 @@ html[data-design="sunrise"] .story-card--icon { background: linear-gradient(180d
 html[data-design="plum"] .story-card--icon, html[data-design="eucalyptus"] .story-card--icon { background: #FFFFFF; border: 1px solid var(--sky-line); border-top: 3px solid var(--accent); }
 html[data-design="terracotta"] .story-card img { border-radius: 2px; }
 
+/* ══ bold: a coloured top bar, drawn or animated backgrounds ═══════════
+   Every motion here is slow, uses background-position or SVG dashes only,
+   and stops for visitors who ask for reduced motion. */
+
+/* the coloured brand row */
+html[data-design="aurora"] .site-header,
+html[data-design="waves"] .site-header,
+html[data-design="monsoon"] .site-header,
+html[data-design="contour"] .site-header,
+html[data-design="flow"] .site-header,
+html[data-design="marigold"] .site-header,
+html[data-design="deepsea"] .site-header,
+html[data-design="blueprint"] .site-header { background: var(--hdr-bg); }
+html[data-design="aurora"] .search-toggle,
+html[data-design="waves"] .search-toggle,
+html[data-design="monsoon"] .search-toggle,
+html[data-design="contour"] .search-toggle,
+html[data-design="flow"] .search-toggle,
+html[data-design="marigold"] .search-toggle,
+html[data-design="deepsea"] .search-toggle,
+html[data-design="blueprint"] .search-toggle,
+html[data-design="aurora"] .menu-toggle,
+html[data-design="waves"] .menu-toggle,
+html[data-design="monsoon"] .menu-toggle,
+html[data-design="contour"] .menu-toggle,
+html[data-design="flow"] .menu-toggle,
+html[data-design="marigold"] .menu-toggle,
+html[data-design="deepsea"] .menu-toggle,
+html[data-design="blueprint"] .menu-toggle { background: transparent; border-color: rgba(255, 255, 255, .45); color: #FFFFFF; }
+html[data-design="aurora"] .nav-item--cta .nav-more,
+html[data-design="waves"] .nav-item--cta .nav-more,
+html[data-design="monsoon"] .nav-item--cta .nav-more,
+html[data-design="contour"] .nav-item--cta .nav-more,
+html[data-design="flow"] .nav-item--cta .nav-more,
+html[data-design="marigold"] .nav-item--cta .nav-more,
+html[data-design="deepsea"] .nav-item--cta .nav-more,
+html[data-design="blueprint"] .nav-item--cta .nav-more { color: #FFFFFF; }
+html[data-design="marigold"] .search-toggle,
+html[data-design="marigold"] .menu-toggle { border-color: rgba(27, 27, 58, .45); color: #1B1B3A; }
+html[data-design="marigold"] .nav-item--cta .nav-more { color: #1B1B3A; }
+html[data-design="marigold"] .brand { background: #FFFFFF; padding: 4px 14px; border-radius: 12px; }
+html[data-design="aurora"] .site-nav,
+html[data-design="waves"] .site-nav,
+html[data-design="monsoon"] .site-nav,
+html[data-design="contour"] .site-nav,
+html[data-design="flow"] .site-nav,
+html[data-design="marigold"] .site-nav,
+html[data-design="deepsea"] .site-nav,
+html[data-design="blueprint"] .site-nav { border-color: rgba(255, 255, 255, .12); }
+
+/* the drawing sits on top of the photo, under the readable veil */
+html[data-design="aurora"] .hero-image-stage::after,
+html[data-design="waves"] .hero-image-stage::after,
+html[data-design="monsoon"] .hero-image-stage::after,
+html[data-design="contour"] .hero-image-stage::after,
+html[data-design="flow"] .hero-image-stage::after,
+html[data-design="marigold"] .hero-image-stage::after,
+html[data-design="deepsea"] .hero-image-stage::after,
+html[data-design="blueprint"] .hero-image-stage::after {
+  background-image: var(--art), linear-gradient(90deg, rgba(var(--veil), .94) 0%, rgba(var(--veil), .84) 36%, rgba(var(--veil), .40) 68%, rgba(var(--veil), .10) 100%);
+  background-size: var(--art-size), 100% 100%;
+  background-repeat: var(--art-repeat, no-repeat), no-repeat;
+  background-position: var(--art-pos, 0 0), 0 0;
+  animation: var(--art-anim, none);
+}
+/* the same drawing, fading out at the edges, behind inner-page titles */
+html[data-design="aurora"] .page-head::before,
+html[data-design="waves"] .page-head::before,
+html[data-design="monsoon"] .page-head::before,
+html[data-design="contour"] .page-head::before,
+html[data-design="flow"] .page-head::before,
+html[data-design="marigold"] .page-head::before,
+html[data-design="deepsea"] .page-head::before,
+html[data-design="blueprint"] .page-head::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: var(--art-flat, none); background-size: var(--art-flat-size, auto);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  animation: var(--art-flat-anim, none);
+}
+html[data-design="aurora"] .page-head > *,
+html[data-design="waves"] .page-head > *,
+html[data-design="monsoon"] .page-head > *,
+html[data-design="contour"] .page-head > *,
+html[data-design="flow"] .page-head > *,
+html[data-design="marigold"] .page-head > *,
+html[data-design="deepsea"] .page-head > *,
+html[data-design="blueprint"] .page-head > * { position: relative; }
+html[data-design="aurora"] .site-footer,
+html[data-design="waves"] .site-footer,
+html[data-design="monsoon"] .site-footer,
+html[data-design="contour"] .site-footer,
+html[data-design="flow"] .site-footer,
+html[data-design="marigold"] .site-footer,
+html[data-design="deepsea"] .site-footer,
+html[data-design="blueprint"] .site-footer { background-image: var(--art-flat, none); background-size: var(--art-flat-size, auto); animation: var(--art-flat-anim, none); }
+
+/* ── aurora: drifting colour ─────────────────────────────────────────── */
+html[data-design="aurora"] {
+  --veil: 15, 27, 76; --hdr-bg: linear-gradient(90deg, #0E7C86 0%, #4B3DB8 100%);
+  --deep: #0F1B4C; --deep-2: #1B2C6E; --on-deep: #D3DAF3; --on-deep-muted: #A3AFDB; --nav-bg: #0F1B4C;
+  --orange: #C2255C; --orange-press: #A81E4E; --cta-bg: #C2255C; --cta-hover: #A81E4E;
+  --accent: #7CF0D8; --accent-ink: #0B6E64; --azure-ink: #3B33A8;
+  --sky: #EEF1FB; --sky-line: #D6DCF3; --sand: #E8F8F4; --nav-hover: #9DF5E2;
+  --art: radial-gradient(45% 60% at 20% 30%, rgba(94, 234, 212, .42), transparent 70%), radial-gradient(40% 55% at 82% 70%, rgba(214, 51, 108, .40), transparent 70%), radial-gradient(35% 50% at 55% 15%, rgba(124, 92, 255, .38), transparent 70%);
+  --art-size: 140% 140%, 140% 140%, 140% 140%; --art-repeat: no-repeat, no-repeat, no-repeat;
+  --art-pos: 0% 0%, 100% 100%, 50% 0%; --art-anim: aurora 36s ease-in-out infinite alternate;
+  --art-flat: radial-gradient(45% 80% at 12% 40%, rgba(94, 234, 212, .30), transparent 70%), radial-gradient(40% 80% at 88% 60%, rgba(214, 51, 108, .28), transparent 70%); --art-flat-size: 100% 100%;
+}
+@keyframes aurora { to { background-position: 60% 40%, 40% 60%, 20% 80%, 0 0; } }
+html[data-design="aurora"] .hero-image-stage::after { background-position: 0% 0%, 100% 100%, 50% 0%, 0 0; background-size: 140% 140%, 140% 140%, 140% 140%, 100% 100%; background-repeat: no-repeat; }
+
+/* ── waves: two wave layers sliding ──────────────────────────────────── */
+html[data-design="waves"] {
+  --veil: 8, 64, 122; --hdr-bg: #0A6BC2;
+  --deep: #08407A; --deep-2: #0D5499; --on-deep: #D0E3F6; --on-deep-muted: #9CC0E4; --nav-bg: #08407A;
+  --orange: #C24E00; --orange-press: #A34100; --cta-bg: #C24E00; --cta-hover: #A34100;
+  --accent: #7FD3FF; --accent-ink: #0A5DAA; --azure-ink: #0A5DAA;
+  --sky: #E8F3FC; --sky-line: #CCE3F6; --sand: #E3F4FB; --nav-hover: #BFE6FF;
+}
+html[data-design="waves"] .hero-image-stage::after {
+  background-image: url("wave-1.svg"), url("wave-2.svg"), linear-gradient(90deg, rgba(8, 64, 122, .94) 0%, rgba(8, 64, 122, .82) 40%, rgba(8, 100, 170, .4) 72%, rgba(8, 100, 170, .12) 100%);
+  background-size: 1200px 130px, 1200px 100px, 100% 100%; background-repeat: repeat-x, repeat-x, no-repeat;
+  background-position: 0 100%, 0 100%, 0 0; animation: waves 40s linear infinite;
+}
+@keyframes waves { to { background-position: -1200px 100%, 1200px 100%, 0 0; } }
+html[data-design="waves"] { --art-flat: url("wave-1.svg") repeat-x 0 100%; --art-flat-size: 1200px 70px; }
+
+/* ── monsoon: falling rain ───────────────────────────────────────────── */
+html[data-design="monsoon"] {
+  --veil: 22, 41, 58; --hdr-bg: #1F3A4D;
+  --deep: #16293A; --deep-2: #213D54; --on-deep: #D2DEE8; --on-deep-muted: #9DB3C6; --nav-bg: #16293A;
+  --orange: #F2B134; --orange-press: #FFC355; --cta-bg: #F2B134; --cta-hover: #FFC355; --on-orange: #16293A; --cta-ink: #16293A;
+  --accent: #8ED1FC; --accent-ink: #1C6C9C; --azure-ink: #1C6C9C;
+  --sky: #EAF1F6; --sky-line: #D0DFEA; --sand: #FBF2DC; --nav-hover: #BFE3FB;
+  --art: repeating-linear-gradient(104deg, transparent 0 26px, rgba(255, 255, 255, .09) 26px 27px, transparent 27px 61px, rgba(255, 255, 255, .05) 61px 62px);
+  --art-size: auto; --art-repeat: repeat; --art-pos: 0 0; --art-anim: rain 14s linear infinite;
+  --art-flat: repeating-linear-gradient(104deg, transparent 0 26px, rgba(255, 255, 255, .08) 26px 27px, transparent 27px 61px);
+}
+@keyframes rain { to { background-position: 140px 560px, 0 0; } }
+
+/* ── contour: drifting topography ────────────────────────────────────── */
+html[data-design="contour"] {
+  --veil: 11, 63, 58; --hdr-bg: #0F5D55;
+  --deep: #0B3F3A; --deep-2: #14574F; --on-deep: #CFE3DF; --on-deep-muted: #9EBFB8; --nav-bg: #0B3F3A;
+  --orange: #E3B04B; --orange-press: #EEC066; --cta-bg: #E3B04B; --cta-hover: #EEC066; --on-orange: #0B3F3A; --cta-ink: #0B3F3A;
+  --accent: #E3B04B; --accent-ink: #86601F; --azure-ink: #17665E;
+  --sky: #EEF4F1; --sky-line: #D6E5DE; --sand: #F5EEE0; --nav-hover: #F2D390;
+  --art: url("contours.svg"); --art-size: 1300px auto; --art-repeat: repeat; --art-pos: 0 0; --art-anim: contour 90s linear infinite;
+  --art-flat: url("contours.svg"); --art-flat-size: 1100px auto;
+}
+@keyframes contour { to { background-position: -1300px 0, 0 0; } }
+
+/* ── flow: river lines drawing themselves ────────────────────────────── */
+html[data-design="flow"] {
+  --veil: 11, 37, 69; --hdr-bg: #145DA0;
+  --deep: #0B2545; --deep-2: #13355F; --on-deep: #C8D6E5; --on-deep-muted: #9AB0C7; --nav-bg: #0B2545;
+  --orange: #C2461F; --orange-press: #A53A18; --cta-bg: #C2461F; --cta-hover: #A53A18;
+  --accent: #4DD0E1; --accent-ink: #0B6E7C; --azure-ink: #145DA0;
+  --sky: #EAF2FA; --sky-line: #CFE0F1; --sand: #FDF0E6; --nav-hover: #A8EEF7;
+  --art: url("flow.svg"); --art-size: cover; --art-repeat: no-repeat; --art-pos: center; --art-anim: none;
+  --art-flat: url("flow.svg"); --art-flat-size: cover;
+}
+
+/* ── marigold bold: halftone dots ────────────────────────────────────── */
+html[data-design="marigold"] {
+  --veil: 27, 27, 58; --hdr-bg: #F5A623;
+  --deep: #1B1B3A; --deep-2: #2A2A58; --on-deep: #D6D6EA; --on-deep-muted: #A8A8CC; --nav-bg: #1B1B3A;
+  --orange: #C2410C; --orange-press: #A3380A; --cta-bg: #1B1B3A; --cta-hover: #2A2A58;
+  --accent: #F5A623; --accent-ink: #8F5A08; --azure-ink: #3F3BA8;
+  --sky: #F4F2FB; --sky-line: #E0DCF2; --sand: #FFF1D6; --nav-hover: #FFD98A;
+  --art: radial-gradient(circle, rgba(245, 166, 35, .55) 2.2px, transparent 2.8px); --art-size: 24px 24px; --art-repeat: repeat; --art-pos: 0 0; --art-anim: dots 30s linear infinite;
+  --art-flat: radial-gradient(circle, rgba(245, 166, 35, .35) 2px, transparent 2.6px); --art-flat-size: 24px 24px;
+}
+@keyframes dots { to { background-position: 240px 120px, 0 0; } }
+html[data-design="marigold"] .hero-image-stage::after {
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 58%, rgba(0, 0, 0, .55) 100%); mask-image: linear-gradient(90deg, #000 0%, #000 58%, rgba(0, 0, 0, .55) 100%);
+}
+html[data-design="marigold"] .nav-cta { border: 2px solid #1B1B3A; }
+
+/* ── deep sea: rising light ──────────────────────────────────────────── */
+html[data-design="deepsea"] {
+  --veil: 4, 32, 43; --hdr-bg: linear-gradient(90deg, #064E5A 0%, #0A2A4A 100%);
+  --deep: #04202B; --deep-2: #0A3647; --on-deep: #C4DCE2; --on-deep-muted: #90B3BC; --nav-bg: #04202B;
+  --orange: #2DE2C0; --orange-press: #66EBD0; --cta-bg: #2DE2C0; --cta-hover: #66EBD0; --on-orange: #04202B; --cta-ink: #04202B;
+  --accent: #2DE2C0; --accent-ink: #0A6B5E; --azure-ink: #0B6B80;
+  --sky: #E8F3F5; --sky-line: #CBE2E7; --sand: #E3F6F2; --nav-hover: #8FF0DC;
+  --art: radial-gradient(circle at 12% 80%, rgba(45, 226, 192, .75) 0 2px, transparent 3px), radial-gradient(circle at 34% 40%, rgba(255, 255, 255, .6) 0 1.5px, transparent 2.5px), radial-gradient(circle at 58% 70%, rgba(45, 226, 192, .55) 0 3px, transparent 4px), radial-gradient(circle at 76% 25%, rgba(255, 255, 255, .5) 0 2px, transparent 3px), radial-gradient(circle at 90% 60%, rgba(45, 226, 192, .65) 0 2px, transparent 3px);
+  --art-size: 520px 520px, 440px 440px, 600px 600px, 380px 380px, 480px 480px; --art-repeat: repeat, repeat, repeat, repeat, repeat;
+  --art-pos: 0 0, 0 0, 0 0, 0 0, 0 0; --art-anim: rise 60s linear infinite;
+  --art-flat: radial-gradient(circle at 20% 70%, rgba(45, 226, 192, .8) 0 3px, transparent 4.5px), radial-gradient(circle at 70% 30%, rgba(255, 255, 255, .6) 0 2px, transparent 3.5px), radial-gradient(circle at 45% 20%, rgba(45, 226, 192, .55) 0 4px, transparent 6px); --art-flat-size: 300px 300px, 240px 240px, 420px 420px;
+}
+@keyframes rise { to { background-position: 0 -520px, 0 -440px, 0 -600px, 0 -380px, 0 -480px, 0 0; } }
+html[data-design="deepsea"] .hero-image-stage::after { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; background-size: 520px 520px, 440px 440px, 600px 600px, 380px 380px, 480px 480px, 100% 100%; background-repeat: repeat, repeat, repeat, repeat, repeat, no-repeat; }
+
+/* ── blueprint: a drafting grid ──────────────────────────────────────── */
+html[data-design="blueprint"] {
+  --veil: 8, 47, 110; --hdr-bg: #0B49A8;
+  --deep: #082F6E; --deep-2: #0D4390; --on-deep: #D0DDF3; --on-deep-muted: #9FB7DE; --nav-bg: #082F6E;
+  --orange: #FFE066; --orange-press: #FFE98F; --cta-bg: #FFE066; --cta-hover: #FFE98F; --on-orange: #082F6E; --cta-ink: #082F6E;
+  --accent: #FFE066; --accent-ink: #7A5F00; --azure-ink: #0B49A8;
+  --sky: #EAF1FB; --sky-line: #CFDDF2; --sand: #FFF6D6; --nav-hover: #FFEC9E;
+  --art: linear-gradient(rgba(255, 255, 255, .13) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .13) 1px, transparent 1px), linear-gradient(rgba(255, 255, 255, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .06) 1px, transparent 1px);
+  --art-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px; --art-repeat: repeat, repeat, repeat, repeat; --art-pos: 0 0, 0 0, 0 0, 0 0; --art-anim: grid 24s linear infinite;
+  --art-flat: linear-gradient(rgba(255, 255, 255, .11) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .11) 1px, transparent 1px); --art-flat-size: 80px 80px, 80px 80px;
+}
+@keyframes grid { to { background-position: 80px 80px, 80px 80px, 16px 16px, 16px 16px, 0 0; } }
+html[data-design="blueprint"] .hero-image-stage::after { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px, 100% 100%; background-repeat: repeat, repeat, repeat, repeat, no-repeat; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-design] .hero-image-stage::after, html[data-design] .page-head::before, html[data-design] .site-footer { animation: none !important; }
+}
+
 /* ── the dropdown ────────────────────────────────────────────────────── */
 
 .design-switcher {
