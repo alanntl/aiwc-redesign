@@ -13,5 +13,6 @@
     "branch": "main",
     "authUrl": null
   },
-  "noindex": true
+  "noindex": true,
+  "designPreview": true
 }

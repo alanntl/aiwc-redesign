@@ -267,6 +267,32 @@ function composeDocument(lang, activeSlug, panel, { langBase = '' } = {}) {
   // app.mjs needs the base path to fetch the search index.
   document.body.setAttribute('data-base', BASE);
 
+  /* Design preview (content/site.json "designPreview": true, preview
+     repository only): five alternative looks and a switcher bar. The inline
+     script picks the design before first paint so a page never flashes the
+     default first. */
+  if (SITE.designPreview) {
+    const head = document.querySelector('head');
+    const pick = document.createElement('script');
+    pick.textContent =
+      "try{var D=['field','river','contour','indigo','editorial'],q=new URLSearchParams(location.search).get('design')," +
+      "d=q||localStorage.getItem('aiwc-design');if(q)localStorage.setItem('aiwc-design',q);" +
+      "if(D.indexOf(d)>-1)document.documentElement.setAttribute('data-design',d);}catch(e){}";
+    head.insertBefore(pick, head.firstChild);
+    const serif = document.createElement('link');
+    serif.setAttribute('rel', 'stylesheet');
+    serif.setAttribute('href', 'https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300..600&display=swap');
+    head.appendChild(serif);
+    const css = document.createElement('link');
+    css.setAttribute('rel', 'stylesheet');
+    css.setAttribute('href', BASE + '/assets/variants/variants.css');
+    head.appendChild(css);
+    const js = document.createElement('script');
+    js.setAttribute('type', 'module');
+    js.setAttribute('src', BASE + '/assets/variants/switcher.js');
+    document.body.appendChild(js);
+  }
+
   const app = document.createElement('script');
   app.setAttribute('type', 'module');
   app.setAttribute('src', BASE + '/assets/app.mjs');
