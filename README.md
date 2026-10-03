@@ -9,8 +9,9 @@
 > preview — the test base path, this repo for the CMS, `noindex`, and no
 > `CNAME` so the copy can never claim `aiwc.org.au`. To put the redesign
 > live, apply every commit after `1d54816` to `AIWC2020/aiwc_website`
-> **except** the one titled "Preview deployment".
-> (`git log --oneline 1d54816..main` lists them.)
+> **except** the preview-only ones — titles starting "Preview", and
+> "Remove the design preview layer". `git log --oneline 1d54816..main`
+> lists them all; the design shown is "Field".
 
 | | |
 |---|---|
