@@ -275,9 +275,12 @@ function composeDocument(lang, activeSlug, panel, { langBase = '' } = {}) {
     const head = document.querySelector('head');
     const pick = document.createElement('script');
     pick.textContent =
-      "try{var D=['lagoon','saffron','ocean','sunrise','indigo','eucalyptus','plum','ivory','terracotta','midnight','aurora','waves','monsoon','contour','flow','marigold','deepsea','blueprint'],q=new URLSearchParams(location.search).get('design')," +
-      "d=q||localStorage.getItem('aiwc-design');if(q)localStorage.setItem('aiwc-design',q);" +
-      "if(D.indexOf(d)>-1)document.documentElement.setAttribute('data-design',d);}catch(e){}";
+      "try{var D=['lagoon','saffron','ocean','sunrise','indigo','eucalyptus','plum','ivory','terracotta','midnight','aurora','waves','monsoon','contour','flow','marigold','deepsea','blueprint']," +
+      "M=['off','gentle','ripples','bubbles','caustics','ribbon','everything'],sp=new URLSearchParams(location.search),q=sp.get('design'),m=sp.get('motion')," +
+      "d=q||localStorage.getItem('aiwc-design')||'flow',mo=m||localStorage.getItem('aiwc-motion')||'gentle';" +
+      "if(q)localStorage.setItem('aiwc-design',q);if(m)localStorage.setItem('aiwc-motion',m);" +
+      "if(D.indexOf(d)>-1)document.documentElement.setAttribute('data-design',d);" +
+      "if(M.indexOf(mo)>-1)document.documentElement.setAttribute('data-motion',mo);}catch(e){}";
     head.insertBefore(pick, head.firstChild);
     const serif = document.createElement('link');
     serif.setAttribute('rel', 'stylesheet');

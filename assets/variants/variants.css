@@ -435,22 +435,139 @@ html[data-design="blueprint"] .hero-image-stage::after { background-position: 0 
   html[data-design] .hero-image-stage::after, html[data-design] .page-head::before, html[data-design] .site-footer { animation: none !important; }
 }
 
+/* ══ motion: light, elegant, a little playful ══════════════════════════
+   Chosen with the Motion dropdown (html[data-motion]); independent of the
+   Design. Transforms and opacity only, and everything below is inside a
+   no-preference media query, so reduced-motion visitors get a still page. */
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* one orchestrated entrance: the hero copy rises in, line by line */
+  html[data-motion]:not([data-motion="off"]) .hero-copy-inner > *,
+  html[data-motion]:not([data-motion="off"]) .page-head-copy > * { animation: fx-rise 1s cubic-bezier(.2, .7, .2, 1) both; }
+  html[data-motion]:not([data-motion="off"]) .hero-copy-inner > :nth-child(2), html[data-motion]:not([data-motion="off"]) .page-head-copy > :nth-child(2) { animation-delay: .14s; }
+  html[data-motion]:not([data-motion="off"]) .hero-copy-inner > :nth-child(3), html[data-motion]:not([data-motion="off"]) .page-head-copy > :nth-child(3) { animation-delay: .28s; }
+  html[data-motion]:not([data-motion="off"]) .hero-copy-inner > :nth-child(4), html[data-motion]:not([data-motion="off"]) .page-head-copy > :nth-child(4) { animation-delay: .42s; }
+  @keyframes fx-rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+
+  /* the hero photograph drifts, very slowly */
+  html[data-motion]:not([data-motion="off"]) .hero-image-main { transform-origin: 68% 50%; animation: fx-drift 34s ease-in-out infinite alternate; }
+  @keyframes fx-drift { from { transform: scale(1); } to { transform: scale(1.07) translate(-1.2%, -.8%); } }
+
+  /* blocks float up as they arrive */
+  html[data-motion]:not([data-motion="off"]) .fx-reveal { opacity: 0; transform: translateY(20px); transition: opacity .85s ease, transform .85s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--d, 0ms); }
+  html[data-motion]:not([data-motion="off"]) .fx-reveal.is-in { opacity: 1; transform: none; }
+
+  /* cards lift, pictures brighten, icons hop */
+  html[data-motion]:not([data-motion="off"]) .story-card { transition: transform .35s cubic-bezier(.2, .7, .2, 1), opacity .85s ease; }
+  html[data-motion]:not([data-motion="off"]) .story-card.is-in:hover, html[data-motion]:not([data-motion="off"]) .story-card:not(.fx-reveal):hover { transform: translateY(-5px); transition-delay: 0ms; transition-duration: .35s; }
+  html[data-motion]:not([data-motion="off"]) .story-card img { transition: filter .35s ease; }
+  html[data-motion]:not([data-motion="off"]) .story-card:hover img { filter: saturate(1.15) brightness(1.04); }
+  html[data-motion]:not([data-motion="off"]) .story-card--icon:hover { box-shadow: 0 14px 28px rgba(11, 37, 69, .13); }
+  html[data-motion]:not([data-motion="off"]) .story-card--icon:hover .story-icon svg { animation: fx-hop .7s ease; }
+  html[data-motion]:not([data-motion="off"]) .story-icon svg { animation: fx-float 5.5s ease-in-out infinite; }
+  html[data-motion]:not([data-motion="off"]) .story-card:nth-child(2n) .story-icon svg { animation-delay: -2.2s; }
+  html[data-motion]:not([data-motion="off"]) .story-card:nth-child(3n) .story-icon svg { animation-delay: -3.7s; }
+  @keyframes fx-float { 50% { transform: translateY(-3px); } }
+  @keyframes fx-hop { 30% { transform: translateY(-7px) rotate(-6deg); } 60% { transform: translateY(0) rotate(4deg); } }
+  html[data-motion]:not([data-motion="off"]) .portrait-card > img { transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
+  html[data-motion]:not([data-motion="off"]) .portrait-card:hover > img { transform: translateY(-4px); }
+
+  /* buttons catch the light */
+  html[data-motion]:not([data-motion="off"]) .button, html[data-motion]:not([data-motion="off"]) .nav-cta { position: relative; overflow: hidden; isolation: isolate; }
+  html[data-motion]:not([data-motion="off"]) .button::before, html[data-motion]:not([data-motion="off"]) .nav-cta::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(110deg, transparent 32%, rgba(255, 255, 255, .38) 50%, transparent 68%);
+    transform: translateX(-130%);
+  }
+  html[data-motion]:not([data-motion="off"]) .button:hover::before, html[data-motion]:not([data-motion="off"]) .nav-cta:hover::before { transform: translateX(130%); transition: transform .75s ease; }
+
+  /* menu underline slides in */
+  html[data-motion]:not([data-motion="off"]) .nav-link {
+    background-image: linear-gradient(var(--accent), var(--accent)); background-repeat: no-repeat;
+    background-position: 0 100%; background-size: 0 3px; transition: background-size .3s ease, color .2s ease;
+  }
+  html[data-motion]:not([data-motion="off"]) .nav-link:hover { background-size: 100% 3px; }
+
+  /* the timeline's dots breathe */
+  html[data-motion]:not([data-motion="off"]) .process-step::before { animation: fx-pulse 3.6s ease-out infinite; }
+  html[data-motion]:not([data-motion="off"]) .process-step:nth-child(2)::before { animation-delay: .5s; }
+  html[data-motion]:not([data-motion="off"]) .process-step:nth-child(3)::before { animation-delay: 1s; }
+  html[data-motion]:not([data-motion="off"]) .process-step:nth-child(4)::before { animation-delay: 1.5s; }
+  html[data-motion]:not([data-motion="off"]) .process-step:nth-child(5)::before { animation-delay: 2s; }
+  @keyframes fx-pulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); }
+    70%, 100% { box-shadow: 0 0 0 11px transparent; }
+  }
+
+  /* ── decorative layers (built by switcher.js) ── */
+  .fx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  html[data-motion]:not([data-motion="off"]) .page-head > :not(.fx) { position: relative; z-index: 1; }
+
+  .fx-bubble {
+    position: absolute; bottom: -40px; left: var(--x); width: var(--s); height: var(--s); border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .6), rgba(255, 255, 255, .14) 55%, rgba(255, 255, 255, .04));
+    border: 1px solid rgba(255, 255, 255, .38);
+    animation: fx-bubble var(--t) linear var(--dl) infinite, fx-sway calc(var(--t) / 4) ease-in-out var(--dl) infinite alternate;
+  }
+  @keyframes fx-bubble { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } 85% { opacity: .85; } 100% { transform: translateY(calc(-1 * var(--h))); opacity: 0; } }
+  @keyframes fx-sway { to { translate: var(--sw) 0; } }
+
+  .fx-ripples { position: absolute; left: var(--x); top: var(--y); width: 0; height: 0; transform: scaleY(.42); }
+  .fx-ripples i {
+    position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, .6); opacity: 0;
+    animation: fx-ripple 7s ease-out var(--dl) infinite;
+  }
+  @keyframes fx-ripple { 0% { transform: scale(.15); opacity: .8; } 100% { transform: scale(13); opacity: 0; } }
+
+  .fx-caustics {
+    position: absolute; inset: 0; opacity: .55; mix-blend-mode: screen;
+    background:
+      repeating-radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .28) 0 1.5px, transparent 1.5px 46px),
+      repeating-radial-gradient(circle at 78% 66%, rgba(255, 255, 255, .24) 0 1.5px, transparent 1.5px 61px),
+      repeating-radial-gradient(circle at 48% 90%, rgba(255, 255, 255, .18) 0 1.5px, transparent 1.5px 38px);
+    background-size: 130% 130%; background-repeat: no-repeat;
+    animation: fx-caustics 28s ease-in-out infinite alternate;
+  }
+  @keyframes fx-caustics { from { background-position: 0 0, 100% 100%, 50% 0; } to { background-position: 100% 60%, 0 20%, 20% 100%; } }
+
+  .fx-ribbon { position: absolute; left: 0; bottom: -1px; width: 200%; height: 96px; animation: fx-slide 34s linear infinite; }
+  .fx-ribbon svg { display: block; width: 100%; height: 100%; fill: rgba(255, 255, 255, .16); }
+  .fx-ribbon--b { height: 72px; animation-duration: 22s; animation-direction: reverse; }
+  .fx-ribbon--b svg { fill: rgba(255, 255, 255, .26); }
+  @keyframes fx-slide { to { transform: translateX(-50%); } }
+
+  html[data-motion="ribbon"] .site-nav::after, html[data-motion="everything"] .site-nav::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; pointer-events: none;
+    background: linear-gradient(90deg, transparent 0, var(--accent) 50%, transparent 100%) 0 0 / 260px 100% repeat-x;
+    animation: fx-shimmer 5s linear infinite;
+  }
+  @keyframes fx-shimmer { to { background-position: 260px 0; } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx { display: none; }
+  html[data-motion] .fx-reveal { opacity: 1; transform: none; }
+}
+
 /* ── the dropdown ────────────────────────────────────────────────────── */
 
 .design-switcher {
-  position: fixed; left: 50%; bottom: 16px; z-index: 96;
+  position: fixed; left: 50%; bottom: 16px; z-index: 96; width: max-content;
   transform: translateX(-50%);
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 6px 18px; flex-wrap: wrap; justify-content: center;
   max-width: calc(100vw - 24px);
-  padding: 6px 8px 6px 16px;
+  padding: 7px 10px 7px 16px;
   background: #FFFFFF; color: #1B2430;
-  border: 1px solid #DCE4EC; border-radius: 999px;
+  border: 1px solid #DCE4EC; border-radius: 26px;
   box-shadow: 0 10px 30px rgba(12, 39, 65, .2);
   font: 500 14px/1.2 "Anek Latin", system-ui, sans-serif;
 }
+.design-switcher-group { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .design-switcher label { flex: none; color: #56606B; }
 .design-switcher select {
-  min-width: 0; max-width: 300px; padding: 9px 12px;
+  min-width: 0; max-width: 270px; padding: 9px 12px;
   border: 1px solid #DCE4EC; border-radius: 999px; background: #F6F8FA; color: #1B2430; font: inherit;
 }
 .design-switcher button {
@@ -459,7 +576,9 @@ html[data-design="blueprint"] .hero-image-stage::after { background-position: 0 
 }
 .design-switcher button:hover { background: #13355F; }
 body.has-design-switcher { padding-bottom: 76px; }
-@media (max-width: 640px) {
-  .design-switcher { left: 12px; right: 12px; bottom: 10px; transform: none; border-radius: 16px; }
+@media (max-width: 760px) { body.has-design-switcher { padding-bottom: 150px; } }
+@media (max-width: 760px) {
+  .design-switcher { left: 12px; right: 12px; bottom: 10px; transform: none; border-radius: 16px; padding: 8px 10px; }
+  .design-switcher-group { flex: 1 1 100%; }
   .design-switcher select { flex: 1; max-width: none; }
 }
