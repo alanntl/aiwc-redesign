@@ -784,8 +784,12 @@ function setupDirectory({ gridSel, filtersSel, searchSel, instSel, countSel, emp
       let shown = 0;
       g.cards.forEach((card) => { const ok = matches(card); card.hidden = !ok; if (ok) shown++; });
 
+      // The one-row preview is for browsing. Once someone filters or
+      // searches they asked for those results, so every match is shown
+      // rather than six of eighteen behind another click.
+      const filtering = Boolean(state.country || state.inst || state.query);
       let previewed = shown;
-      if (!g.open) {
+      if (!g.open && !filtering) {
         const perRow = firstRowCount(g);
         let seen = 0;
         g.cards.forEach((card) => {
